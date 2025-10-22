@@ -1,25 +1,3 @@
-# Simulation comparing internal validation methods with external validation
-# for clinical risk prediction models
-#
-# Validation methods: Sample Split, Cross-validation, Bootstrap (Harrell's method)
-# Performance metrics: AUC, Calibration Slope, Brier Score, MAPE
-#
-# NOTE: This script uses Frank Harrell's rms package for bootstrap validation,
-# which provides the authoritative implementation of the bootstrap optimism
-# correction method for discrimination and calibration metrics.
-#
-# SAMPLE SIZE DETERMINATION: This script uses the samplesizedev package 
-# (Pavlou et al., 2022) to determine the development sample size based on 
-# principled criteria for clinical prediction models.
-#
-# PARALLEL PROCESSING: This script uses parallel processing to speed up simulations.
-# It automatically detects the number of available cores and uses all but one.
-#
-# Required packages (install if needed):
-# install.packages(c("pROC", "rms", "ggplot2"))
-# install.packages("devtools")
-# devtools::install_github("mpavlou/samplesizedev")
-
 library(pROC)      # For AUC calculation
 library(rms)       # For validated clinical prediction models (Frank Harrell)
 library(ggplot2)   # For visualization
@@ -28,23 +6,15 @@ library(samplesizedev)
 
 set.seed(123)
 
-# ============================================================================
-# SAMPLE SIZE DETERMINATION (Pavlou et al., 2022)
-# ============================================================================
-
-# Calculate required development sample size using principled criteria
-# Following Riley et al. (2020) and Pavlou et al. (2022) recommendations
-
-cat("Calculating required development sample size...\n")
+# Calculate required development sample size
 
 sample_size_params <- list(
-  p = 10,           # Number of predictor parameters (realistic clinical model)
-  phi = 0.15,       # Anticipated outcome prevalence (15%)
-  c = 0.75,         # Target C-statistic (discrimination)
-  S = 0.9           # Target calibration slope (accounting for expected shrinkage)
+  p = 10,
+  phi = 0.15,
+  c = 0.75,
+  S = 0.9
 )
 
-# Calculate required sample size using samplesizedev
 res <- samplesizedev(
   outcome = "Binary",
   S = sample_size_params$S,
@@ -53,38 +23,16 @@ res <- samplesizedev(
   p = sample_size_params$p
 )
 
-# Extract sample sizes
-# res$rvs = Riley's method, res$sim = Pavlou's simulated recommendation
 N_DEV_RILEY <- ceiling(res$rvs)
 N_DEV_PAVLOU <- ceiling(res$sim)
 
-# Use Pavlou's simulated recommendation (more conservative)
 N_DEV <- N_DEV_PAVLOU
 N_EVENTS <- ceiling(N_DEV * sample_size_params$phi)
 
-cat(sprintf("\n=== SAMPLE SIZE CALCULATION RESULTS ===\n"))
-cat(sprintf("Target parameters:\n"))
-cat(sprintf("  - Number of predictors (p): %d\n", sample_size_params$p))
-cat(sprintf("  - Outcome prevalence (φ): %.1f%%\n", sample_size_params$phi * 100))
-cat(sprintf("  - Target C-statistic: %.2f\n", sample_size_params$c))
-cat(sprintf("  - Target calibration slope: %.2f\n", sample_size_params$S))
-cat(sprintf("\nSample size recommendations:\n"))
-cat(sprintf("  - Riley et al. method: %d\n", N_DEV_RILEY))
-cat(sprintf("  - Pavlou et al. simulation: %d\n", N_DEV_PAVLOU))
-cat(sprintf("\nUsing Pavlou simulation-based sample size:\n"))
-cat(sprintf("  - Total observations: %d\n", N_DEV))
-cat(sprintf("  - Expected events: %d\n", N_EVENTS))
-cat(sprintf("  - Events per variable (EPV): %.1f\n\n", N_EVENTS / sample_size_params$p))
-
-# ============================================================================
-# HELPER FUNCTIONS FOR PERFORMANCE METRICS
-# ============================================================================
+# HELPER FUNCTIONS FOR PERFORMANCE
 
 calculate_performance_metrics <- function(y_true, y_pred) {
-  # Calculate all performance metrics
-  # Returns: list with auc, cal_slope, brier, mape
-  
-  # AUC (C-statistic) - suppress verbose messages
+
   auc_val <- as.numeric(auc(y_true, y_pred, quiet = TRUE))
   
   # Calibration slope (logistic regression of outcomes on logit predictions)
@@ -106,27 +54,14 @@ calculate_performance_metrics <- function(y_true, y_pred) {
   ))
 }
 
-# ============================================================================
 # 1. DATA GENERATING PROCESS
-# ============================================================================
 
-# ============================================================================
-# 1. DATA GENERATING PROCESS
-# ============================================================================
-
-# Helper function: logistic (expit) function
 expit <- function(x) 1 / (1 + exp(-x))
-
-# Calculate intercept (alpha) to achieve target prevalence
-# We use a sample dataset to find the intercept that gives us the desired prevalence
-cat("Calculating intercept for target prevalence...\n")
 
 # Generate a large sample to estimate the intercept
 n_sample <- 10000
 X_sample <- replicate(10, rnorm(n_sample))
 colnames(X_sample) <- paste0("X", 1:10)
-
-# Define beta coefficients (mix of effect sizes: moderate to small, including some zeros)
 beta <- c(0.45,   # X1: Moderate effect
           0.40,   # X2: Moderate effect
          -0.35,   # X3: Moderate negative effect
@@ -138,10 +73,7 @@ beta <- c(0.45,   # X1: Moderate effect
           0.08,   # X9: Small effect
           0.05)   # X10: Small effect
 
-# Target prevalence
 target_prev <- 0.15
-
-# Function to find alpha (intercept) that gives target prevalence
 find_alpha <- function(a) {
   mean(expit(a + as.vector(X_sample %*% beta))) - target_prev
 }
@@ -155,12 +87,9 @@ cat(sprintf("Target prevalence: %.1f%%\n\n", target_prev * 100))
 pi_verify <- expit(alpha + as.vector(X_sample %*% beta))
 y_verify <- rbinom(n_sample, 1, pi_verify)
 observed_prev_verify <- sum(y_verify) / length(y_verify)
-cat(sprintf("Verification - Observed prevalence: %.2f%%\n\n", observed_prev_verify * 100))
 
 # Main data generation function
 generate_data <- function(n, prevalence = 0.15) {
-  # Simulate 10 continuous predictors, all standardized N(0,1)
-  
   X1 <- rnorm(n, mean = 0, sd = 1)
   X2 <- rnorm(n, mean = 0, sd = 1)
   X3 <- rnorm(n, mean = 0, sd = 1)
@@ -171,9 +100,6 @@ generate_data <- function(n, prevalence = 0.15) {
   X8 <- rnorm(n, mean = 0, sd = 1)
   X9 <- rnorm(n, mean = 0, sd = 1)
   X10 <- rnorm(n, mean = 0, sd = 1)
-  
-  # Use the pre-calculated intercept (alpha) and beta coefficients
-  # These are defined in the global environment above
   
   # True logistic model
   logit_p <- alpha + 
@@ -193,9 +119,7 @@ generate_data <- function(n, prevalence = 0.15) {
   )
 }
 
-# ============================================================================
 # 2. VALIDATION METHODS
-# ============================================================================
 
 # Apparent validation (resubstitution)
 apparent_validation <- function(data) {
@@ -269,9 +193,9 @@ cv_validation <- function(data, k = 10) {
   return(metrics)
 }
 
-# Bootstrap optimism correction (Harrell's method via rms package)
+# Bootstrap optimism correction (Harrell, rms)
 bootstrap_validation <- function(data, B = 200) {
-  # Fit model using rms::lrm for proper integration with validate()
+  # Fit model using lrm for proper integration with validate()
   model <- lrm(outcome ~ X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8 + X9 + X10, 
                data = data, x = TRUE, y = TRUE)
   
@@ -285,8 +209,7 @@ bootstrap_validation <- function(data, B = 200) {
   # Extract optimism-corrected calibration slope
   slope_corrected <- val_results["Slope", "index.corrected"]
   
-  # For Brier score and MAPE, calculate optimism via bootstrap
-  # (not directly available from rms::validate)
+  # For Brier score and MAPE, calculate optimism via bootstrap, (not directly available from rms::validate)
   n <- nrow(data)
   brier_optimism <- numeric(B)
   mape_optimism <- numeric(B)
@@ -344,32 +267,26 @@ external_validation <- function(model, external_data) {
   return(metrics)
 }
 
-# ============================================================================
 # 3. SIMULATION STUDY (WITH PARALLEL PROCESSING)
-# ============================================================================
 
 # Single simulation iteration (to be parallelized)
 run_single_simulation <- function(sim, n_dev, n_ext, B_boot, k_cv, seed_base) {
-  # Set seed for reproducibility
   set.seed(seed_base + sim)
-  
-  # Generate development data
   dev_data <- generate_data(n_dev)
-  
-  # Fit model on development data and get apparent metrics
+
   apparent_result <- apparent_validation(dev_data)
   dev_model <- apparent_result$model
   
-  # Generate large external validation dataset (gold standard)
+  # external
   ext_data <- generate_data(n_ext)
   ext_metrics <- external_validation(dev_model, ext_data)
   
-  # Apply internal validation methods
+  # Apply internal validation 
   split_metrics <- sample_split_validation(dev_data)
   cv_metrics <- cv_validation(dev_data, k = k_cv)
   bootstrap_metrics <- bootstrap_validation(dev_data, B = B_boot)
   
-  # Store results for each validation method
+  # Store results
   sim_results <- data.frame()
   
   for (method in c("Sample Split", "Cross-validation", "Bootstrap")) {
@@ -422,7 +339,7 @@ run_simulation <- function(n_dev = N_DEV, n_ext = 100000, n_sim = 200,
               n_dev, n_ext, n_sim, B_boot, k_cv))
   
   # Run simulations in parallel
-  seed_base <- 12300  # Base seed for reproducibility
+  seed_base <- 12300
   
   if (.Platform$OS.type == "windows") {
     # Windows: use parLapply with cluster
@@ -469,15 +386,8 @@ run_simulation <- function(n_dev = N_DEV, n_ext = 100000, n_sim = 200,
   return(results)
 }
 
-# ============================================================================
-# 4. RUN SIMULATION AND ANALYZE
-# ============================================================================
+# 4. RUN SIMULATION
 
-cat("Starting validation comparison simulation...\n\n")
-
-# Run simulation with calculated sample size and large external validation
-# n_dev = N_DEV (calculated from samplesizedev based on principled criteria)
-# n_ext = 100,000 (large sample to ensure asymptotic "true" performance)
 results <- run_simulation(n_dev = N_DEV, n_ext = 100000, n_sim = 200, 
                          B_boot = 200, k_cv = 10)
 
@@ -488,8 +398,6 @@ results$bias_brier <- results$internal_brier - results$external_brier
 results$bias_mape <- results$internal_mape - results$external_mape
 
 # Summary statistics
-cat("\n=== SUMMARY STATISTICS ===\n\n")
-
 methods_list <- unique(results$method)
 
 cat("AUC (C-statistic) - Higher is Better:\n")
@@ -548,23 +456,19 @@ for (m in methods_list) {
               mean(method_data$bias_mape), sqrt(mean(method_data$bias_mape^2))))
 }
 
-# ============================================================================
-# 5. VISUALIZATION - CONDENSED FORMAT WITH 5 ESTIMATES PER METRIC
-# ============================================================================
+# 5. VISUALIZATION
 
-# Create plots with 5 boxplots per metric:
+# 5 boxplots per metric:
 #   1. Apparent (baseline) - performance on development data
-#   2. Sample Split (internal) - internal validation estimate
-#   3. Cross-validation (internal) - internal validation estimate
-#   4. Bootstrap (internal) - internal validation estimate
-#   5. External (gold standard) - performance on large external dataset
+#   2. Sample Split (internal)
+#   3. Cross-validation (internal)
+#   4. Bootstrap (internal)
+#   5. External (gold standard) - performance on large external data
 #
 # NOTE: Apparent and External values are the SAME across all three method rows
 # for each simulation (since they come from the same dev and external data).
 # We arbitrarily extract them from the "Sample Split" rows, but could use any method.
 # Only the "internal" values differ between methods.
-
-cat("\nCreating condensed comparison plots (5 estimates per metric)...\n")
 
 # Define estimate types and colors
 estimate_colors <- c(
@@ -579,12 +483,7 @@ estimate_levels <- c("Apparent", "Sample Split", "Cross-validation",
                     "Bootstrap", "External")
 
 # --- Plot 1: AUC Comparison ---
-cat("Creating condensed AUC comparison plot...\n")
-
 auc_plot_data <- data.frame()
-
-# Apparent (same for all methods, so just take one row per simulation)
-# We can take any method since apparent values are identical
 apparent_data <- results[results$method == "Sample Split", ]
 auc_plot_data <- rbind(auc_plot_data, data.frame(
   estimate_type = "Apparent",
@@ -600,8 +499,6 @@ for (method_name in c("Sample Split", "Cross-validation", "Bootstrap")) {
   ))
 }
 
-# External (same for all methods, so just take one row per simulation)
-# We can take any method since external values are identical
 external_data <- results[results$method == "Sample Split", ]
 auc_plot_data <- rbind(auc_plot_data, data.frame(
   estimate_type = "External",
@@ -634,11 +531,8 @@ ggsave("comparison_auc.png", p_auc,
        width = 10, height = 6, dpi = 300)
 
 # --- Plot 2: Calibration Slope Comparison ---
-cat("Creating condensed Calibration Slope comparison plot...\n")
-
 cal_plot_data <- data.frame()
 
-# Apparent (same for all methods, so just take one row per simulation)
 apparent_data <- results[results$method == "Sample Split", ]
 cal_plot_data <- rbind(cal_plot_data, data.frame(
   estimate_type = "Apparent",
@@ -654,7 +548,7 @@ for (method_name in c("Sample Split", "Cross-validation", "Bootstrap")) {
   ))
 }
 
-# External (same for all methods, so just take one row per simulation)
+# External
 external_data <- results[results$method == "Sample Split", ]
 cal_plot_data <- rbind(cal_plot_data, data.frame(
   estimate_type = "External",
@@ -688,11 +582,9 @@ ggsave("comparison_calibration.png", p_cal,
        width = 10, height = 6, dpi = 300)
 
 # --- Plot 3: Brier Score Comparison ---
-cat("Creating condensed Brier Score comparison plot...\n")
-
 brier_plot_data <- data.frame()
 
-# Apparent (same for all methods, so just take one row per simulation)
+# Apparent
 apparent_data <- results[results$method == "Sample Split", ]
 brier_plot_data <- rbind(brier_plot_data, data.frame(
   estimate_type = "Apparent",
@@ -708,7 +600,7 @@ for (method_name in c("Sample Split", "Cross-validation", "Bootstrap")) {
   ))
 }
 
-# External (same for all methods, so just take one row per simulation)
+# External
 external_data <- results[results$method == "Sample Split", ]
 brier_plot_data <- rbind(brier_plot_data, data.frame(
   estimate_type = "External",
@@ -740,11 +632,9 @@ ggsave("comparison_brier.png", p_brier,
        width = 10, height = 6, dpi = 300)
 
 # --- Plot 4: MAPE Comparison ---
-cat("Creating condensed MAPE comparison plot...\n")
-
 mape_plot_data <- data.frame()
 
-# Apparent (same for all methods, so just take one row per simulation)
+# Apparent
 apparent_data <- results[results$method == "Sample Split", ]
 mape_plot_data <- rbind(mape_plot_data, data.frame(
   estimate_type = "Apparent",
@@ -760,7 +650,7 @@ for (method_name in c("Sample Split", "Cross-validation", "Bootstrap")) {
   ))
 }
 
-# External (same for all methods, so just take one row per simulation)
+# External
 external_data <- results[results$method == "Sample Split", ]
 mape_plot_data <- rbind(mape_plot_data, data.frame(
   estimate_type = "External",
@@ -795,28 +685,3 @@ cat("All condensed plots saved!\n")
 
 # Save results
 write.csv(results, "validation_results.csv", row.names = FALSE)
-
-cat("\n=== SIMULATION COMPLETE ===\n")
-cat("\nSimulation parameters:\n")
-cat(sprintf("  • Development data: %d samples (calculated via samplesizedev)\n", N_DEV))
-cat(sprintf("  • Expected events in development: %d (EPV: %.1f)\n", N_EVENTS, N_EVENTS/10))
-cat("  • External validation: 100,000 samples (asymptotic truth)\n")
-cat("  • Number of simulations: 200 (parallelized)\n")
-cat("  • Bootstrap samples: 200\n")
-cat("  • Cross-validation folds: 10\n")
-cat("  • Number of predictors: 10\n")
-cat("  • Target prevalence: 15%\n")
-cat("  • Target C-statistic: 0.75\n")
-cat("  • Target calibration slope: 0.90\n")
-cat("\nCondensed comparison plots (one per metric, 5 estimates each) saved:\n")
-cat("  - comparison_auc.png\n")
-cat("  - comparison_calibration.png\n")
-cat("  - comparison_brier.png\n")
-cat("  - comparison_mape.png\n")
-cat("\nEach plot shows 5 boxplots in a single panel:\n")
-cat("  • Apparent (gray) - baseline overfitted estimate\n")
-cat("  • Sample Split (red) - internal validation\n")
-cat("  • Cross-validation (blue) - internal validation\n")
-cat("  • Bootstrap (green) - internal validation\n")
-cat("  • External (orange) - gold standard\n")
-cat("\nResults data saved to validation_results.csv\n")
