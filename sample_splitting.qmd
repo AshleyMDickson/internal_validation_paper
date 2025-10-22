@@ -30,7 +30,7 @@ This recommendation is substantially higher than the number of patients recruite
 
 The reccomendation to collect a certain sample size applies only to the development data. Where data are needed for validation, this would ordinarily require collecting an appropriate number of additional records. For example in the case of a 70/30 sample split, we would require an uplift of 42.9%. However, where there are no additional records available, researchers must sacrifice some of their development data when performing split-sample validation.
 
-In this code, I try to identify the size of the sacrifice that is made for each 10% reduction in development data that is made available for validation.
+In this code, I try to identify the size of the sacrifice that is made for each 10% reduction in development data that is made available for validation. I use the output from the above sample size calculation, 1,515 patients, as the basis for these calculations.
 
 ```{r}
 suppress_plots <- function(expr) {
@@ -42,9 +42,7 @@ suppress_plots <- function(expr) {
   }, add = TRUE)
   force(expr)
 }
-```
 
-```{r}
 find_cs <- function(x) {
   frac <- as.integer(round(726 * x))
   res <- suppress_plots(
@@ -55,15 +53,9 @@ find_cs <- function(x) {
 }
 ```
 
-```{r}
-fractions <- seq(0.01, 1.21, by = 0.10) # exclude 0 to avoid errors
-```
-
 ```{r, message=FALSE}
+fractions <- seq(0.01, 1.20, by = 0.10) # exclude 0 to avoid errors
 slopes <- vapply(fractions, find_cs, numeric(1))
-```
-
-```{r}
 results <- data.frame(
   fraction = fractions,
   slope    = slopes
