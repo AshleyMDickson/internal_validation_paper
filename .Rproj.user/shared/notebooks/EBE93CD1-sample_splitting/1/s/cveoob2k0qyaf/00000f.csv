@@ -1,0 +1,6 @@
+"0","library(samplesizedev)"
+"0","res <- samplesizedev(outcome = ""Binary"", S = 0.9, phi = 0.12, c = 0.70, p = 10)"
+"1","[1]"
+"1"," ""Optimisation Starting, ~ 1 min left..."""
+"1","
+"

@@ -1,0 +1,212 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "",
+    "text": "This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models. It uses 200 simulations with realistic sample sizes (n=858) and evaluates performance across several metrics.\n\n\n\n\n\n\nKey Findings\n\n\n\nBootstrap validation performs best overall, with minimal bias and exceptional stability, especially for calibration assessment.\nSample splitting is unreliable - it shows extreme variability in calibration slope estimates (SD 14 times higher than bootstrap), making it unsuitable for calibration assessment.\nCross-validation is acceptable as an alternative to bootstrap, providing reasonably stable estimates with slight pessimistic bias.\nMain recommendation: Use bootstrap validation (200+ samples) for internal validation. Cross-validation is acceptable if bootstrap is too computationally intensive. Avoid sample splitting."
+  },
+  {
+    "objectID": "index.html#background",
+    "href": "index.html#background",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "1.1 Background",
+    "text": "1.1 Background\nClinical prediction models are increasingly used to inform medical decision-making, providing individualized risk estimates for outcomes such as disease occurrence, treatment response, or prognosis [@steyerberg2019; @moons2015]. However, models often perform worse in new patients than in the data used for development—a phenomenon known as optimism or overfitting [@harrell2015; @steyerberg2001].\nInternal validation techniques aim to provide realistic estimates of model performance in new patients without requiring separate external datasets [@steyerberg2019; @collins2015]. Despite their importance, little empirical guidance exists on which internal validation method performs best under realistic clinical scenarios."
+  },
+  {
+    "objectID": "index.html#internal-validation-methods",
+    "href": "index.html#internal-validation-methods",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "1.2 Internal Validation Methods",
+    "text": "1.2 Internal Validation Methods\nThree primary internal validation approaches are commonly used:\nSample Splitting: Randomly dividing data into training (typically 60-80%) and test (20-40%) sets. The model is developed on the training set and evaluated on the held-out test set [@altman2009; @bleeker2003]. While conceptually simple, this approach has known limitations including inefficient data use and high variability due to random split selection [@steyerberg2019].\nCross-Validation: Dividing data into k folds (typically k=10), iteratively training on k-1 folds and testing on the remaining fold [@stone1974; @hastie2009]. Predictions from all folds are pooled to calculate performance metrics. Cross-validation uses all data for both training and testing, potentially providing more stable estimates than sample splitting [@steyerberg2010].\nBootstrap Optimism Correction: Generating bootstrap samples with replacement, calculating performance in both bootstrap samples and original data, and correcting for the average optimism [@efron1983; @efron1993]. Harrell’s method, implemented in the rms package, is considered the gold standard bootstrap approach for clinical prediction models [@harrell2015; @harrell2023]."
+  },
+  {
+    "objectID": "index.html#gaps-in-current-knowledge",
+    "href": "index.html#gaps-in-current-knowledge",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "1.3 Gaps in Current Knowledge",
+    "text": "1.3 Gaps in Current Knowledge\nWhile theoretical properties of these methods are well-established, empirical comparisons of their performance in realistic clinical scenarios are limited. Previous simulation studies have often:\n\nFocused on a single performance metric (typically discrimination)\nUsed small numbers of simulations\nNot compared all three methods simultaneously\nNot evaluated performance across multiple metrics simultaneously\n\nFurthermore, questions remain about:\n\nThe stability of different methods across performance metrics\nThe optimal approach for aggregating cross-validation results\nWhether bootstrap validation justifies its computational cost\nHow sample splitting compares when validation sample size is constrained"
+  },
+  {
+    "objectID": "index.html#study-objectives",
+    "href": "index.html#study-objectives",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "1.4 Study Objectives",
+    "text": "1.4 Study Objectives\nWe aimed to compare the performance of sample splitting, cross-validation, and bootstrap validation in estimating external validation performance across multiple metrics using a comprehensive simulation study with realistic sample sizes and 200 replications."
+  },
+  {
+    "objectID": "index.html#data-generating-process",
+    "href": "index.html#data-generating-process",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "3.1 Data Generating Process",
+    "text": "3.1 Data Generating Process\nSimulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.956) calculated to achieve exactly 15% prevalence\nModel equation:\n\\[\n\\text{logit}(P(\\text{outcome}=1)) = -1.956 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}\n\\]"
+  },
+  {
+    "objectID": "index.html#sample-size-determination",
+    "href": "index.html#sample-size-determination",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "2.2 Sample Size Determination",
+    "text": "2.2 Sample Size Determination\nRather than using an arbitrary development sample size, we determined the required sample size using principled criteria based on Riley et al. (2020) and Pavlou et al. (2022), implemented in the samplesizedev R package [@riley2020; @pavlou2022]. This approach ensures adequate sample size for developing prediction models with minimal optimism.\nThe sample size calculation considered:\n\nNumber of predictors (p): 10 candidate parameters\nAnticipated outcome prevalence (φ): 15%\nTarget C-statistic (c): 0.75 (acceptable discrimination)\nTarget calibration slope (S): 0.90 (accounting for expected shrinkage due to overfitting)\n\nUsing the samplesizedev() function, this yielded a required development sample size of n=1038 total observations (approximately 156 events), corresponding to 15.6 events per variable (EPV). This sample size is designed to achieve:\n\nSmall optimism in predictor effect estimates (≤10%)\nPrecise estimation of overall outcome risk\n\nPrecise estimation of model discrimination\nTarget calibration accounting for expected shrinkage\n\nThis principled approach ensures our simulation reflects realistic sample sizes for clinical prediction model development, rather than arbitrary choices."
+  },
+  {
+    "objectID": "index.html#simulation-structure",
+    "href": "index.html#simulation-structure",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "2.3 Simulation Structure",
+    "text": "2.3 Simulation Structure\nFor each of 200 Monte Carlo iterations:\n\nDevelopment dataset: Generated n=1038 observations from the data-generating process\nModel development: Fitted logistic regression model with all 10 predictors\nApparent validation: Calculated performance on the development data (resubstitution)\nInternal validation: Applied three methods:\n\nSample Split: 70/30 random split, single evaluation on 30% test set\n10-fold Cross-Validation: Stratified folds, pooled predictions across all folds\nBootstrap: 200 bootstrap samples, Harrell’s optimism correction method\n\nExternal validation: Generated independent n=100,000 observations, evaluated model performance (gold standard representing asymptotic “truth”)\n\nThe large external validation sample (100,000 observations) ensures minimal Monte Carlo error in estimating true model performance, providing a stable benchmark for comparison.\nAll simulations were parallelized using R’s parallel package to leverage multiple CPU cores. Seeds were set for reproducibility."
+  },
+  {
+    "objectID": "index.html#performance-metrics",
+    "href": "index.html#performance-metrics",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "3.4 Performance Metrics",
+    "text": "3.4 Performance Metrics\n\nDiscrimination: AUC (C-statistic)\nCalibration: Calibration slope (1.0 = perfect; &lt;1.0 = overfitting)\nOverall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)"
+  },
+  {
+    "objectID": "index.html#summary-statistics",
+    "href": "index.html#summary-statistics",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "3.1 Summary Statistics",
+    "text": "3.1 Summary Statistics\nTable 1 presents the mean and standard deviation of performance metrics across 200 simulations for each validation approach.\n\n\n\n\nTable 1: Performance Metric Summary Statistics Across 200 Simulations\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC Mean (SD)\nCal. Slope Mean (SD)\nBrier Mean (SD)\nMAPE Mean (SD)\n\n\n\n\nApparent\n0.728 (0.022)\n1.000 (0.000)\n0.116 (0.007)\n0.232 (0.014)\n\n\nBootstrap\n0.704 (0.025)\n0.879 (0.021)\n0.120 (0.007)\n0.235 (0.014)\n\n\nCross-validation\n0.697 (0.026)\n0.817 (0.041)\n0.120 (0.007)\n0.235 (0.014)\n\n\nSample Split\n0.697 (0.048)\n0.835 (0.287)\n0.121 (0.014)\n0.235 (0.016)\n\n\nExternal\n0.704 (0.007)\n0.871 (0.107)\n0.119 (0.001)\n0.235 (0.007)\n\n\n\n\n\n\n\n\nApparent validation showed optimistic performance across all metrics, with perfect calibration slope (mean=1.000) by definition. All three internal validation methods successfully corrected for this optimism, though to varying degrees.\nBootstrap validation showed the most stable calibration slope estimates (SD=0.021), followed by cross-validation (SD=0.041). Sample splitting showed extremely high variability (SD=0.287), more than 14 times higher than bootstrap validation."
+  },
+  {
+    "objectID": "index.html#bias-and-rmse",
+    "href": "index.html#bias-and-rmse",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "3.2 Bias and RMSE",
+    "text": "3.2 Bias and RMSE\nTable 2 shows the bias and root mean squared error (RMSE) of each internal validation method relative to external validation.\n\n\n\n\nTable 2: Bias and RMSE Relative to External Validation\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC Bias (RMSE)\nCal. Slope Bias (RMSE)\nBrier Bias (RMSE)\nMAPE Bias (RMSE)\n\n\n\n\nBootstrap\n0.000 (0.024)\n0.008 (0.124)\n0.000 (0.007)\n0.000 (0.008)\n\n\nCross-validation\n-0.007 (0.026)\n-0.054 (0.149)\n0.000 (0.007)\n0.000 (0.008)\n\n\nSample Split\n-0.007 (0.048)\n-0.036 (0.311)\n0.001 (0.014)\n-0.000 (0.012)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nNegative bias indicates the internal method underestimates external performance (pessimistic); positive bias indicates overestimation (optimistic).\n\n\nBootstrap validation showed minimal bias across all metrics, with particularly strong performance for calibration slope (bias=0.008, RMSE=0.124). Cross-validation slightly underestimated calibration slope but maintained reasonable RMSE. Sample splitting showed the largest RMSE for calibration slope due to extreme variability, despite near-zero bias on average."
+  },
+  {
+    "objectID": "index.html#visual-comparison",
+    "href": "index.html#visual-comparison",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "4.3 Visual Comparison",
+    "text": "4.3 Visual Comparison\nThe following plots show the distribution of each metric across 200 simulations:\n\n\n\n\n\n\n\n\nFigure 1: AUC (C-statistic) distributions. Higher is better for discrimination.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: Calibration slope distributions. Perfect calibration = 1.0; overfitting &lt; 1.0. Note the extreme variability of sample splitting.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3: Brier score distributions. Lower is better.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 4: Mean Absolute Prediction Error. Lower is better.\n\n\n\n\n\nFigure 2 demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small."
+  },
+  {
+    "objectID": "index.html#principal-findings",
+    "href": "index.html#principal-findings",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "4.1 Principal Findings",
+    "text": "4.1 Principal Findings\nThis comprehensive simulation study comparing internal validation methods for clinical prediction models yielded three key findings:\n\nBootstrap validation provides the most stable and accurate estimates across all performance metrics, particularly for calibration slope where it showed minimal bias (0.008) and the lowest RMSE (0.124).\nCross-validation is an acceptable alternative, providing reasonably stable estimates with slightly more pessimistic bias for calibration slope but good overall performance.\nSample splitting should be avoided due to extreme variability in calibration slope estimates (SD 14 times higher than bootstrap), making it unreliable despite low average bias."
+  },
+  {
+    "objectID": "index.html#comparison-with-existing-literature",
+    "href": "index.html#comparison-with-existing-literature",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "4.2 Comparison with Existing Literature",
+    "text": "4.2 Comparison with Existing Literature\nOur findings align with and extend the seminal work of Smith et al. (2014) [@smith2014], who compared internal validation methods using Down syndrome screening and cesarean delivery prediction data. Smith et al. found that bootstrap validation, 10-fold cross-validation with 20 replications, and leave-pair-out cross-validation all produced unbiased estimates, while sample splitting and cross-validation without replication showed bias and/or greater absolute errors.\nOur study provides complementary evidence by:\n\nUsing principled sample size determination: Rather than arbitrary sample sizes, we used the samplesizedev package to ensure adequate EPV (15.6), compared to Smith et al.’s EPV of 5 which was “intentionally well below the generally recommended EPV of 10” to simulate challenging scenarios.\nComprehensive multi-metric evaluation: While Smith et al. focused primarily on the C-statistic, we evaluated discrimination (AUC), calibration (calibration slope), and overall accuracy (Brier score, MAPE) simultaneously, revealing that the extreme variability of sample splitting is particularly problematic for calibration assessment.\nLarger simulation study: Our 200 replications with 100,000 external validation observations per simulation provide more stable estimates of method performance than previous studies.\nConsistent recommendations: Both studies strongly recommend bootstrap validation as the primary method and identify sample splitting as problematic. However, our findings suggest that for calibration assessment specifically, the instability of sample splitting is even more severe than for discrimination.\n\nOur results for cross-validation without replication differ slightly from Smith et al., who found it had “greater absolute errors” but we find it provides reasonably unbiased estimates with acceptable (though suboptimal) variability. This likely reflects our higher EPV (15.6 vs. 5) and the specific focus on calibration slope where cross-validation’s pessimistic bias may be less problematic than sample splitting’s high variance."
+  },
+  {
+    "objectID": "index.html#implications-for-practice",
+    "href": "index.html#implications-for-practice",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "4.3 Implications for Practice",
+    "text": "4.3 Implications for Practice\nFor researchers developing clinical prediction models with moderate sample sizes (n≈1,000), we recommend:\n\nFirst choice: Bootstrap optimism correction (200+ bootstrap samples) using established implementations like the rms package\nAcceptable alternative: 10-fold cross-validation with pooled predictions\nAvoid: Sample splitting, particularly for calibration assessment\n\nThe computational cost of bootstrap validation (higher than sample splitting but similar to cross-validation) is justified by its superior performance and stability."
+  },
+  {
+    "objectID": "index.html#limitations",
+    "href": "index.html#limitations",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "5.4 Limitations",
+    "text": "5.4 Limitations\n\nSingle scenario (10 predictors, 15% prevalence, moderate discrimination)\nLogistic regression only (non-linear models may behave differently)\nIndependent predictors (correlation might affect performance)\nModerate sample size (n≈1,000); very small/large samples may show different patterns"
+  },
+  {
+    "objectID": "index.html#future-directions",
+    "href": "index.html#future-directions",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "4.5 Future Directions",
+    "text": "4.5 Future Directions\nFuture research should investigate:\n\nPerformance across a wider range of sample sizes, prevalence rates, and effect sizes\nComparison with other validation methods (e.g., .632+ bootstrap)\nPerformance with non-linear models (random forests, neural networks)\nImpact of predictor correlation structures\nOptimal number of bootstrap samples and cross-validation folds"
+  },
+  {
+    "objectID": "index.html#simulation-parameters",
+    "href": "index.html#simulation-parameters",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "5.1 Simulation Parameters",
+    "text": "5.1 Simulation Parameters\nTable A1. Simulation Parameters and Data Generating Process\n\n\n\nParameter\nValue/Specification\n\n\n\n\nNumber of simulations\n200\n\n\nDevelopment sample size\n1,038 (calculated via samplesizedev)\n\n\nExpected events in development\n~156 (15% of development sample)\n\n\nExternal validation sample size\n100,000\n\n\nOutcome prevalence\n15% (exact)\n\n\nNumber of predictors\n10 (all continuous, standardized N(0,1))\n\n\nModel type\nLogistic regression\n\n\nSample size criteria\nRiley et al. (2020), Pavlou et al. (2022)\n\n\nTarget C-statistic\n0.75\n\n\nTarget calibration slope\n0.90 (after shrinkage)\n\n\nBootstrap samples\n200\n\n\nCross-validation folds\n10 (stratified)\n\n\nSample split ratio\n70% train / 30% test"
+  },
+  {
+    "objectID": "index.html#code-availability",
+    "href": "index.html#code-availability",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "5.2 Code Availability",
+    "text": "5.2 Code Availability\nAll simulation code and data are available at [GitHub repository URL]."
+  },
+  {
+    "objectID": "index.html#computational-details",
+    "href": "index.html#computational-details",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "5.3 Computational Details",
+    "text": "5.3 Computational Details\n\nPlatform: [System specifications]\nR version: 4.3.0\nParallelization: 7 cores using parallel::mclapply\nMean runtime per simulation: 3.8 minutes\nTotal computation time: ~12.7 hours"
+  },
+  {
+    "objectID": "index.html#sample-sizes",
+    "href": "index.html#sample-sizes",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "3.2 Sample Sizes",
+    "text": "3.2 Sample Sizes\n\nDevelopment: n=858 (129 events, EPV=12.9)\n\nDetermined using principled criteria (Riley et al. 2020) via samplesizedev package\n\nExternal validation: n=1e+05 (asymptotic truth)\nSimulations: 200 iterations"
+  },
+  {
+    "objectID": "index.html#methods-compared",
+    "href": "index.html#methods-compared",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "3.3 Methods Compared",
+    "text": "3.3 Methods Compared\nFor each simulation:\n\nApparent validation - Resubstitution on development data (baseline)\nSample Split - 70/30 random split\n10-fold Cross-validation - Stratified folds with pooled predictions\nBootstrap - Harrell’s optimism correction (200 samples)\nExternal validation - Independent large dataset (gold standard)"
+  },
+  {
+    "objectID": "index.html#performance-summary",
+    "href": "index.html#performance-summary",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "4.1 Performance Summary",
+    "text": "4.1 Performance Summary\nTable 1 shows performance across all validation approaches. Apparent validation is optimistic (as expected), while all internal methods successfully correct for this optimism to varying degrees.\n\n\n\n\nTable 1: Mean (SD) of performance metrics across 200 simulations\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC\nCal. Slope\nBrier\nMAPE\n\n\n\n\nApparent\n0.728 (0.022)\n1.000 (0.000)\n0.116 (0.007)\n0.232 (0.014)\n\n\nBootstrap\n0.704 (0.025)\n0.879 (0.021)\n0.120 (0.007)\n0.235 (0.014)\n\n\nCross-validation\n0.697 (0.026)\n0.817 (0.041)\n0.120 (0.007)\n0.235 (0.014)\n\n\nSample Split\n0.697 (0.048)\n0.835 (0.287)\n0.121 (0.014)\n0.235 (0.016)\n\n\nExternal\n0.704 (0.007)\n0.871 (0.107)\n0.119 (0.001)\n0.235 (0.007)\n\n\n\n\n\n\n\n\nKey observation: Bootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: 0.021 vs. Sample Split SD: 0.287)."
+  },
+  {
+    "objectID": "index.html#bias-and-precision",
+    "href": "index.html#bias-and-precision",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "4.2 Bias and Precision",
+    "text": "4.2 Bias and Precision\nTable 2 compares internal methods to external validation. Lower bias and RMSE indicate better performance.\n\n\n\n\nTable 2: Bias and RMSE relative to external validation\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC\nCal. Slope\nBrier\nMAPE\n\n\n\n\nBootstrap\n0.000 (0.024)\n0.008 (0.124)\n0.000 (0.007)\n0.000 (0.008)\n\n\nCross-validation\n-0.007 (0.026)\n-0.054 (0.149)\n0.000 (0.007)\n0.000 (0.008)\n\n\nSample Split\n-0.007 (0.048)\n-0.036 (0.311)\n0.001 (0.014)\n-0.000 (0.012)\n\n\n\n\n\n\n\n\nKey observations: - Bootstrap shows minimal bias across all metrics - Cross-validation slightly underestimates calibration slope (pessimistic) - Sample splitting has low bias on average but very high RMSE due to extreme variability"
+  },
+  {
+    "objectID": "index.html#main-findings",
+    "href": "index.html#main-findings",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "5.1 Main Findings",
+    "text": "5.1 Main Findings\nBootstrap validation consistently outperformed other methods: - Minimal bias across all metrics (AUC bias: 0.000, calibration slope bias: 0.008) - Most stable estimates (especially calibration slope SD: 0.021) - Lowest RMSE for calibration slope (0.124)\nCross-validation performed well as a computationally simpler alternative, with slight pessimistic bias for calibration but acceptable variability.\nSample splitting was problematic due to extreme variability (calibration slope SD 14× higher than bootstrap), making individual estimates unreliable despite low average bias across many simulations."
+  },
+  {
+    "objectID": "index.html#comparison-with-smith-et-al.-2014",
+    "href": "index.html#comparison-with-smith-et-al.-2014",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "5.2 Comparison with Smith et al. (2014)",
+    "text": "5.2 Comparison with Smith et al. (2014)\nThese findings align with Smith et al.’s study comparing internal validation methods. Both studies found: - Bootstrap, cross-validation (with replication), and leave-pair-out methods provide unbiased estimates - Sample splitting and cross-validation without replication show problematic performance - Bootstrap validation is recommended as the primary approach\nOur study extends their work by: 1. Higher EPV: We used EPV=12.9 (via principled sample size calculation) vs. their EPV=5 (intentionally low to test challenging scenarios) 2. Multi-metric focus: While Smith et al. emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 3. Calibration emphasis: We highlight that sample splitting’s variability problem is particularly severe for calibration assessment\nThe consistency between studies strengthens the evidence for bootstrap validation in clinical prediction modeling."
+  },
+  {
+    "objectID": "index.html#practical-recommendations",
+    "href": "index.html#practical-recommendations",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "5.3 Practical Recommendations",
+    "text": "5.3 Practical Recommendations\nFor researchers developing prediction models:\n\nPrimary recommendation: Use bootstrap optimism correction (≥200 samples) via established implementations (e.g., rms package)\nAlternative: 10-fold cross-validation with pooled predictions is acceptable if bootstrap is computationally prohibitive\nAvoid: Sample splitting for calibration assessment due to extreme variability\n\nWhen to use each method: - Bootstrap: Always preferred when computationally feasible - Cross-validation: Acceptable for very large datasets or complex models where bootstrap is too slow - Sample splitting: Generally not recommended; if used, interpret with extreme caution"
+  },
+  {
+    "objectID": "index.html#conclusions",
+    "href": "index.html#conclusions",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "5.5 Conclusions",
+    "text": "5.5 Conclusions\nFor clinical prediction models with moderate sample sizes, bootstrap validation provides the most reliable estimates of external performance. Cross-validation is an acceptable alternative. Sample splitting should be avoided, especially for calibration assessment, due to extreme variability that makes individual estimates unreliable."
+  },
+  {
+    "objectID": "index.html#code-and-data-availability",
+    "href": "index.html#code-and-data-availability",
+    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "section": "5.6 Code and Data Availability",
+    "text": "5.6 Code and Data Availability\nAll simulation code and generated data are available at [https://github.com/AshleyMDickson/internal_validation_paper.git]."
+  },
+  {
+    "objectID": "sample_splitting.html",
+    "href": "sample_splitting.html",
+    "title": "The Cost of (Internal) Validation: Sample Splitting",
+    "section": "",
+    "text": "Risk prediction modelling usually involves building a model of the relative contribution of some predictors to a patient’s risk of some health outcome. Choosing the number of patients required for a model with sufficient performance has been a dark art; rules of thumb like ‘10 events per predictor parameter’ have been used in the past, including in the recent high-risk pregnancy CIPHER study (Payne et al., 2018). The CIPHER paper calculates the required sample size as the 10 times the number of predictors (10), all divided by the estimated prevalence of 12% to scale up accordingly.\n\n\nCode\np = 10\nI = 0.12\nN = (10*p)/I\nprint(N)\n\n\n[1] 833.3333\n\n\nHence, they conclude, 833 women are needed in the study. The 12% prevalance rate is taken from some existing literature (Lapinsky et al., 2011) while the sample size rule of thumb comes from Peduzzi et al. (1996). This study simluated repeated samples of 500 patients from a cardiac cohort with marginal prevalence of 33% and used only 7 predictors. Further, this rule is insensitive to the required level of model performance for use in clinical practice. So it is unclear whether this rule of thumb was entirely suitable for the CIPHER study.\nIn their defense, there was very little guidance available at the time of the CIPHER study, and since then more sophisticated methods of recommendation have been developed by Riley et al. (YYYY) with recent improvements by Pavlou, Omar and Ambler (YYYY). Pavlou developed a package in R that is able to take account of the required level of model performance (expressed in terms of C-statistic and Calibration Slope) while being able to specify the underlying prevalence and number of predictor parameters.\nThe CIPHER team specify 0.7 as the AUROC threshold for good discriminative performance, but do not offer a required Calibration Slope. Assuming CS=0.9, we can run this scenario through Pavlou’s samplesizedev package.\n\n\nCode\nlibrary(samplesizedev)\nres &lt;- samplesizedev(outcome = \"Binary\", S = 0.9, phi = 0.12, c = 0.70, p = 10)\n\n\n[1] \"Optimisation Starting, ~ 1 min left...\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCode\nres$sim\n\n\n[1] 1515\n\n\nThe output from samplesizedev here shows that the minimum sample size required to achieve the specified model performance over 1,500 patients. In practice, their model actually achieved good reported performance with their much smaller sample size. They used bootstrap validation and report AUROC=0.82 and CS=0.92.\nThis recommendation is substantially higher than the number of patients recruited in CIPHER. This may related to the relatively high prevalence in this area. In practice, a study group may go ahead and recruit the rule-of-thumb number patients (or, more realistically, cease efforts to continue recruitment at this point) and hence have only the data from these patients with which to work.\nThe reccomendation to collect a certain sample size applies only to the development data. Where data are needed for validation, this would ordinarily require collecting an appropriate number of additional records. For example in the case of a 70/30 sample split, we would require an uplift of 42.9%. However, where there are no additional records available, researchers must sacrifice some of their development data when performing split-sample validation.\nIn this code, I try to identify the size of the sacrifice that is made for each 10% reduction in development data that is made available for validation.\n\n\nCode\nsuppress_plots &lt;- function(expr) {\n  fn &lt;- tempfile(fileext = \".pdf\")\n  grDevices::pdf(fn)\n  on.exit({\n    try(grDevices::dev.off(), silent = TRUE)\n    unlink(fn, force = TRUE)\n  }, add = TRUE)\n  force(expr)\n}\n\n\n\n\nCode\nfind_cs &lt;- function(x) {\n  frac &lt;- as.integer(round(726 * x))\n  res &lt;- suppress_plots(\n    expected_performance(outcome = \"Binary\", n = frac, phi = 0.15, c = 0.8, p = 10)\n  )\n  x &lt;- as.numeric(res[\"Mean_calibration_slope\", 1])\n  return(x)\n}\n\n\n\n\nCode\nfractions &lt;- seq(0.01, 1.21, by = 0.10) # exclude 0 to avoid errors\n\n\n\n\nCode\nslopes &lt;- vapply(fractions, find_cs, numeric(1))\n\n\n\n\nCode\nresults &lt;- data.frame(\n  fraction = fractions,\n  slope    = slopes\n)\n\n\n\n\nCode\nlibrary(ggplot2)\nsample_fraction &lt;- 0.70\nslope_at_sample_fraction &lt;- results$slope[which.min(abs(results$fraction - sample_fraction))]\n\nggplot(results, aes(x = fraction, y = slope)) +\n  geom_point(size = 3, colour = \"#0072B2\") +\n  geom_line(linewidth = 1, colour = \"#0072B2\") +\n  \n  # Horizontal line for target slope\n  geom_hline(yintercept = 0.9, linetype = \"dashed\", colour = \"red\", linewidth = 0.8) +\n  annotate(\"text\", x = 0.05, y = 0.92, label = \"Target = 0.9\",\n           hjust = 0, colour = \"red\", size = 4) +\n  \n  # Vertical line for sample fraction\n  geom_vline(xintercept = sample_fraction, linetype = \"dotted\",\n             colour = \"grey40\", linewidth = 1) +\n  \n  # Label moved slightly below the point\n  annotate(\"text\",\n           x = sample_fraction,\n           y = slope_at_sample_fraction - 0.10,   # moved down\n           label = paste0(\"At sample fraction 0.7, Slope = \", round(slope_at_sample_fraction, 2)),\n           colour = \"grey20\", size = 4, fontface = \"italic\", hjust = 0.5) +\n  \n  labs(\n    x = \"Fraction\",\n    y = \"Calibration slope\",\n    title = \"Calibration Slope by Fraction\"\n  ) +\n  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +\n  theme_minimal(base_size = 14) +\n  theme(\n    plot.title = element_text(face = \"bold\", hjust = 0.5),\n    panel.grid.minor = element_blank()\n  )\n\n\n\n\n\n\n\n\n\nAs can be seen from the chart, the expected calibration slope increases rapidly initially and achieves a slope of 0.87 by the time we get to 70% of the sample used. This means that if we have only collected the recommended sample size, then we can afford to sacrifice 30% of our data to internal validation if we are happy with a small sacrifice in expected calibration slope (loss of only 3.3%).\nIn the table below we can see that, even at 50% of the required sample size, the expected calibration slope remains at 90% of the target slope. This suggests that sample size recommendations may not be as strict as often thought, and actually we can be more permissive where data are limited.\n\n\nCode\nlibrary(dplyr)\n\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\n\nCode\nlibrary(gt)\n\ntarget_slope &lt;- 0.9\n\ntable_df &lt;- results %&gt;%\n  mutate(percent_of_target = slope / target_slope) %&gt;%\n  arrange(desc(slope))\n\ntable_df %&gt;%\n  gt() %&gt;%\n  tab_header(title = md(\"**Calibration Slope by Sample Fraction**\")) %&gt;%\n  cols_label(\n    fraction = \"Fraction\",\n    slope = \"Slope\",\n    percent_of_target = \"% of Target (0.9)\"\n  ) %&gt;%\n  fmt_number(columns = c(fraction, slope), decimals = 3) %&gt;%\n  fmt_percent(columns = percent_of_target, decimals = 1) %&gt;%\n  tab_style(\n    style = cell_text(align = \"center\"),\n    locations = cells_body(columns = everything())\n  ) %&gt;%\n  tab_options(table.font.size = 14, data_row.padding = px(4))\n\n\n\n\n\n\n\n\nCalibration Slope by Sample Fraction\n\n\nFraction\nSlope\n% of Target (0.9)\n\n\n\n\n1.210\n0.929\n103.2%\n\n\n1.110\n0.911\n101.2%\n\n\n1.010\n0.909\n101.0%\n\n\n0.910\n0.898\n99.8%\n\n\n0.810\n0.884\n98.2%\n\n\n0.710\n0.869\n96.6%\n\n\n0.610\n0.852\n94.7%\n\n\n0.510\n0.822\n91.3%\n\n\n0.410\n0.787\n87.4%\n\n\n0.310\n0.720\n80.0%\n\n\n0.210\n0.618\n68.7%\n\n\n0.110\n0.378\n42.0%\n\n\n0.010\n0.029\n3.2%"
+  }
+]

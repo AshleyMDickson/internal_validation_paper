@@ -1,6 +1,13 @@
 {
   "paper.qmd": {
     "paper.html": "b5580bc1",
-    "paper.docx": "4a516a35"
+    "paper.docx": "4a516a35",
+    "paper.tex": "bae96bb9"
+  },
+  "index.qmd": {
+    "index.html": "52f7919e"
+  },
+  "sample_splitting.qmd": {
+    "sample_splitting.html": "8eedd70e"
   }
 }

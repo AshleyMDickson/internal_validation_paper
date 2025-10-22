@@ -1,0 +1,8 @@
+"0","find_cs <- function(x) {"
+"0","  frac <- as.integer(round(726 * x))"
+"0","  res <- suppress_plots("
+"0","    expected_performance(outcome = ""Binary"", n = frac, phi = 0.15, c = 0.8, p = 10)"
+"0","  )"
+"0","  x <- as.numeric(res[""Mean_calibration_slope"", 1])"
+"0","  return(x)"
+"0","}"

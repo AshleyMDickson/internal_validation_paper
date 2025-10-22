@@ -6,17 +6,14 @@ website:
   title: "Internal Validation Methods Comparison"
   navbar:
     left:
-      - text: "Paper"
-        href: paper.html
-      - text: "Code"
-        href: simulation_code.R
-      - text: "Results"
-        href: validation_results.csv
+      - text: "Internal Validation"
+        href: index.qmd
+      - text: "Sample splitting"
+        href: sample_splitting.qmd
 
 format:
   html:
     theme: cosmo
-    css: styles.css
     toc: true
     toc-depth: 3
     number-sections: true
