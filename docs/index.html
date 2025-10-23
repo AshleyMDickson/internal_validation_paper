@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ashley Dickson">
-<meta name="dcterms.date" content="2025-10-22">
+<meta name="dcterms.date" content="2025-10-23">
 
 <title>Comparing Internal Validation Methods for Clinical Prediction Models – Internal Validation Methods Comparison</title>
 <style>
@@ -196,7 +196,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 22, 2025</p>
+      <p class="date">October 23, 2025</p>
     </div>
   </div>
   
@@ -211,34 +211,34 @@ window.Quarto = {
 <section id="overview" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Overview</h1>
 <p>This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models. It uses 200 simulations with realistic sample sizes (n=858) and evaluates performance across several metrics.</p>
-<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout callout-style-simple callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Key Findings
+<span class="screen-reader-only">Note</span>Key Findings
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Bootstrap validation performs best overall</strong>, with minimal bias and exceptional stability, especially for calibration assessment.</p>
-<p><strong>Sample splitting is unreliable</strong> - it shows extreme variability in calibration slope estimates (SD 14 times higher than bootstrap), making it unsuitable for calibration assessment.</p>
-<p><strong>Cross-validation is acceptable</strong> as an alternative to bootstrap, providing reasonably stable estimates with slight pessimistic bias.</p>
-<p><strong>Main recommendation</strong>: Use bootstrap validation (200+ samples) for internal validation. Cross-validation is acceptable if bootstrap is too computationally intensive. Avoid sample splitting.</p>
+<p>Bootstrap validation performs best overall, with minimal bias and exceptional stability, especially for calibration assessment.</p>
+<p>Sample splitting is unreliable - it shows extreme variability in calibration slope estimates (SD 14 times higher than bootstrap), making it unsuitable for calibration assessment.</p>
+<p>Cross-validation is acceptable as an alternative to bootstrap, providing reasonably stable estimates with slight pessimistic bias.</p>
+<p>Main recommendation: Use bootstrap validation (200+ samples) for internal validation. Cross-validation is acceptable if bootstrap is too computationally intensive. Avoid sample splitting.</p>
 </div>
 </div>
 </section>
 <section id="background" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Background</h1>
 <p>Clinical prediction models often perform worse in new patients than in development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. However, multiple methods exist with limited guidance on which performs best.</p>
-<p><strong>Study aim</strong>: Compare sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation (gold standard) across discrimination, calibration, and overall accuracy metrics.</p>
+<p>Study aim: Compare sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation (gold standard) across discrimination, calibration, and overall accuracy metrics.</p>
 </section>
 <section id="methods" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
 <section id="data-generating-process" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="data-generating-process"><span class="header-section-number">3.1</span> Data Generating Process</h2>
-<p><strong>Simulated scenario:</strong> - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.956) calculated to achieve exactly 15% prevalence</p>
-<p><strong>Model equation:</strong></p>
+<p>Simulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.956) calculated to achieve exactly 15% prevalence</p>
+<p>Model equation:</p>
 <p><span class="math display">\[
 \text{logit}(P(\text{outcome}=1)) = -1.956 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}
 \]</span></p>
@@ -246,31 +246,31 @@ window.Quarto = {
 <section id="sample-sizes" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="sample-sizes"><span class="header-section-number">3.2</span> Sample Sizes</h2>
 <ul>
-<li><strong>Development</strong>: n=858 (129 events, EPV=12.9)
+<li>Development: n=858 (129 events, EPV=12.9)
 <ul>
 <li>Determined using principled criteria (Riley et al.&nbsp;2020) via <code>samplesizedev</code> package</li>
 </ul></li>
-<li><strong>External validation</strong>: n=1e+05 (asymptotic truth)</li>
-<li><strong>Simulations</strong>: 200 iterations</li>
+<li>External validation: n=1e+05 (asymptotic truth)</li>
+<li>Simulations: 200 iterations</li>
 </ul>
 </section>
 <section id="methods-compared" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="methods-compared"><span class="header-section-number">3.3</span> Methods Compared</h2>
 <p>For each simulation:</p>
 <ol type="1">
-<li><strong>Apparent validation</strong> - Resubstitution on development data (baseline)</li>
-<li><strong>Sample Split</strong> - 70/30 random split</li>
-<li><strong>10-fold Cross-validation</strong> - Stratified folds with pooled predictions</li>
-<li><strong>Bootstrap</strong> - Harrell’s optimism correction (200 samples)</li>
-<li><strong>External validation</strong> - Independent large dataset (gold standard)</li>
+<li>Apparent validation - Optimistic test on development data (baseline)</li>
+<li>Sample Split - 70/30 split</li>
+<li>10-fold Cross-validation - Stratified folds with pooled predictions</li>
+<li>Bootstrap - Harrell’s optimism correction (200 resamples)</li>
+<li>External validation - Independent large dataset (gold standard)</li>
 </ol>
 </section>
 <section id="performance-metrics" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="performance-metrics"><span class="header-section-number">3.4</span> Performance Metrics</h2>
 <ul>
-<li><strong>Discrimination</strong>: AUC (C-statistic)</li>
-<li><strong>Calibration</strong>: Calibration slope (1.0 = perfect; &lt;1.0 = overfitting)</li>
-<li><strong>Overall accuracy</strong>: Brier score, Mean Absolute Prediction Error (MAPE)</li>
+<li>Discrimination: AUC (C-statistic)</li>
+<li>Calibration: Calibration slope (1.0 = perfect; &lt;1.0 = overfitting)</li>
+<li>Overall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)</li>
 </ul>
 </section>
 </section>
@@ -347,7 +347,7 @@ Table&nbsp;1: Mean (SD) of performance metrics across 200 simulations
 </figure>
 </div>
 </div>
-<p><strong>Key observation</strong>: Bootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: 0.021 vs.&nbsp;Sample Split SD: 0.287).</p>
+<p>Bootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: 0.021 vs.&nbsp;Sample Split SD: 0.287).</p>
 </section>
 <section id="bias-and-precision" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="bias-and-precision"><span class="header-section-number">4.2</span> Bias and Precision</h2>
@@ -406,7 +406,7 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 </figure>
 </div>
 </div>
-<p><strong>Key observations</strong>: - Bootstrap shows minimal bias across all metrics - Cross-validation slightly underestimates calibration slope (pessimistic) - Sample splitting has low bias on average but very high RMSE due to extreme variability</p>
+<p>Bootstrap shows minimal bias across all metrics - Cross-validation slightly underestimates calibration slope (pessimistic) - Sample splitting has low bias on average but very high RMSE due to extreme variability</p>
 </section>
 <section id="visual-comparison" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="visual-comparison"><span class="header-section-number">4.3</span> Visual Comparison</h2>
@@ -419,7 +419,7 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 <img src="comparison_auc.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: AUC (C-statistic) distributions. Higher is better for discrimination.
+Figure&nbsp;1: AUC (C-statistic) distributions
 </figcaption>
 </figure>
 </div>
@@ -433,7 +433,7 @@ Figure&nbsp;1: AUC (C-statistic) distributions. Higher is better for discriminat
 <img src="comparison_calibration.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Calibration slope distributions. Perfect calibration = 1.0; overfitting &lt; 1.0. Note the extreme variability of sample splitting.
+Figure&nbsp;2: Calibration slope distributions. Note the extreme variability of sample splitting.
 </figcaption>
 </figure>
 </div>
@@ -447,7 +447,7 @@ Figure&nbsp;2: Calibration slope distributions. Perfect calibration = 1.0; overf
 <img src="comparison_brier.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-brier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Brier score distributions. Lower is better.
+Figure&nbsp;3: Brier score distributions: lower is better.
 </figcaption>
 </figure>
 </div>
@@ -461,7 +461,7 @@ Figure&nbsp;3: Brier score distributions. Lower is better.
 <img src="comparison_mape.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Mean Absolute Prediction Error. Lower is better.
+Figure&nbsp;4: Mean Absolute Prediction Error: lower is better.
 </figcaption>
 </figure>
 </div>
@@ -480,8 +480,8 @@ Figure&nbsp;4: Mean Absolute Prediction Error. Lower is better.
 </section>
 <section id="comparison-with-smith-et-al.-2014" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="comparison-with-smith-et-al.-2014"><span class="header-section-number">5.2</span> Comparison with Smith et al.&nbsp;(2014)</h2>
-<p>These findings align with Smith et al.’s study comparing internal validation methods. Both studies found: - Bootstrap, cross-validation (with replication), and leave-pair-out methods provide unbiased estimates - Sample splitting and cross-validation without replication show problematic performance - Bootstrap validation is recommended as the primary approach</p>
-<p>Our study extends their work by: 1. Higher EPV: We used EPV=12.9 (via principled sample size calculation) vs.&nbsp;their EPV=5 (intentionally low to test challenging scenarios) 2. Multi-metric focus: While Smith et al.&nbsp;emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 3. Calibration emphasis: We highlight that sample splitting’s variability problem is particularly severe for calibration assessment</p>
+<p>These findings align with Smith et al.’s study comparing internal validation methods. Both studies found: - Bootstrap, cross-validation (with replication) methods provide unbiased estimates - Sample splitting shows problematic performance - Bootstrap validation is recommended as the primary approach</p>
+<p>This study differs from their work by: 1. Higher EPV: We used EPV=12.9 (via principled sample size calculation) vs.&nbsp;their EPV=5 (intentionally low to test challenging scenarios) 2. Multi-metric focus: While Smith et al.&nbsp;emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 3. Calibration emphasis: We highlight that sample splitting’s variability problem is particularly severe for calibration assessment</p>
 <p>The consistency between studies strengthens the evidence for bootstrap validation in clinical prediction modeling.</p>
 </section>
 <section id="practical-recommendations" class="level2" data-number="5.3">
@@ -492,7 +492,6 @@ Figure&nbsp;4: Mean Absolute Prediction Error. Lower is better.
 <li>Alternative: 10-fold cross-validation with pooled predictions is acceptable if bootstrap is computationally prohibitive</li>
 <li>Avoid: Sample splitting for calibration assessment due to extreme variability</li>
 </ol>
-<p>When to use each method: - Bootstrap: Always preferred when computationally feasible - Cross-validation: Acceptable for very large datasets or complex models where bootstrap is too slow - Sample splitting: Generally not recommended; if used, interpret with extreme caution</p>
 </section>
 <section id="limitations" class="level2" data-number="5.4">
 <h2 data-number="5.4" class="anchored" data-anchor-id="limitations"><span class="header-section-number">5.4</span> Limitations</h2>

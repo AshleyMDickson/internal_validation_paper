@@ -513,7 +513,6 @@ p_auc <- ggplot(auc_plot_data, aes(x = estimate_type, y = value, fill = estimate
   geom_boxplot(alpha = 0.75, width = 0.7) +
   scale_fill_manual(values = estimate_colors) +
   labs(title = "AUC (C-statistic): Performance Across Validation Approaches",
-       subtitle = "Higher is better | Comparing apparent, internal validation methods, and external validation",
        x = "",
        y = "AUC (C-statistic)") +
   theme_bw() +
@@ -564,7 +563,6 @@ p_cal <- ggplot(cal_plot_data, aes(x = estimate_type, y = value, fill = estimate
              linewidth = 0.6, alpha = 0.7) +
   scale_fill_manual(values = estimate_colors) +
   labs(title = "Calibration Slope: Performance Across Validation Approaches",
-       subtitle = "Target = 1.0 (dashed line) | Comparing apparent, internal validation methods, and external validation",
        x = "",
        y = "Calibration Slope") +
   theme_bw() +
@@ -614,7 +612,6 @@ p_brier <- ggplot(brier_plot_data, aes(x = estimate_type, y = value, fill = esti
   geom_boxplot(alpha = 0.75, width = 0.7) +
   scale_fill_manual(values = estimate_colors) +
   labs(title = "Brier Score: Performance Across Validation Approaches",
-       subtitle = "Lower is better | Comparing apparent, internal validation methods, and external validation",
        x = "",
        y = "Brier Score") +
   theme_bw() +
@@ -664,7 +661,6 @@ p_mape <- ggplot(mape_plot_data, aes(x = estimate_type, y = value, fill = estima
   geom_boxplot(alpha = 0.75, width = 0.7) +
   scale_fill_manual(values = estimate_colors) +
   labs(title = "MAPE (Mean Absolute Prediction Error): Performance Across Validation Approaches",
-       subtitle = "Lower is better | Comparing apparent, internal validation methods, and external validation",
        x = "",
        y = "Mean Absolute Prediction Error") +
   theme_bw() +

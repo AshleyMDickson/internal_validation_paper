@@ -153,31 +153,31 @@ n_ext <- 100000
 
 This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models. It uses 200 simulations with realistic sample sizes (n=`r n_dev`) and evaluates performance across several metrics.
 
-::: callout-important
+::: {.callout-note appearance="simple"}
 ## Key Findings
 
-**Bootstrap validation performs best overall**, with minimal bias and exceptional stability, especially for calibration assessment.
+Bootstrap validation performs best overall, with minimal bias and exceptional stability, especially for calibration assessment.
 
-**Sample splitting is unreliable** - it shows extreme variability in calibration slope estimates (SD `r round(split_bootstrap_ratio)` times higher than bootstrap), making it unsuitable for calibration assessment.
+Sample splitting is unreliable - it shows extreme variability in calibration slope estimates (SD `r round(split_bootstrap_ratio)` times higher than bootstrap), making it unsuitable for calibration assessment.
 
-**Cross-validation is acceptable** as an alternative to bootstrap, providing reasonably stable estimates with slight pessimistic bias.
+Cross-validation is acceptable as an alternative to bootstrap, providing reasonably stable estimates with slight pessimistic bias.
 
-**Main recommendation**: Use bootstrap validation (200+ samples) for internal validation. Cross-validation is acceptable if bootstrap is too computationally intensive. Avoid sample splitting.
+Main recommendation: Use bootstrap validation (200+ samples) for internal validation. Cross-validation is acceptable if bootstrap is too computationally intensive. Avoid sample splitting.
 :::
 
 # Background
 
 Clinical prediction models often perform worse in new patients than in development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. However, multiple methods exist with limited guidance on which performs best.
 
-**Study aim**: Compare sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation (gold standard) across discrimination, calibration, and overall accuracy metrics.
+Study aim: Compare sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation (gold standard) across discrimination, calibration, and overall accuracy metrics.
 
 # Methods
 
 ## Data Generating Process
 
-**Simulated scenario:** - Binary outcome with 15% prevalence - 10 continuous predictors (X₁...X₁₀), all \~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.956) calculated to achieve exactly 15% prevalence
+Simulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁...X₁₀), all \~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.956) calculated to achieve exactly 15% prevalence
 
-**Model equation:**
+Model equation:
 
 $$
 \text{logit}(P(\text{outcome}=1)) = -1.956 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}
@@ -185,26 +185,26 @@ $$
 
 ## Sample Sizes
 
--   **Development**: n=`r n_dev` (`r n_events` events, EPV=`r sprintf("%.1f", epv)`)
+-   Development: n=`r n_dev` (`r n_events` events, EPV=`r sprintf("%.1f", epv)`)
     -   Determined using principled criteria (Riley et al. 2020) via `samplesizedev` package
--   **External validation**: n=`r format(n_ext, big.mark=",")` (asymptotic truth)
--   **Simulations**: 200 iterations
+-   External validation: n=`r format(n_ext, big.mark=",")` (asymptotic truth)
+-   Simulations: 200 iterations
 
 ## Methods Compared
 
 For each simulation:
 
-1.  **Apparent validation** - Resubstitution on development data (baseline)
-2.  **Sample Split** - 70/30 random split
-3.  **10-fold Cross-validation** - Stratified folds with pooled predictions
-4.  **Bootstrap** - Harrell's optimism correction (200 samples)
-5.  **External validation** - Independent large dataset (gold standard)
+1.  Apparent validation - Optimistic test on development data (baseline)
+2.  Sample Split - 70/30 split
+3.  10-fold Cross-validation - Stratified folds with pooled predictions
+4.  Bootstrap - Harrell's optimism correction (200 resamples)
+5.  External validation - Independent large dataset (gold standard)
 
 ## Performance Metrics
 
--   **Discrimination**: AUC (C-statistic)
--   **Calibration**: Calibration slope (1.0 = perfect; \<1.0 = overfitting)
--   **Overall accuracy**: Brier score, Mean Absolute Prediction Error (MAPE)
+-   Discrimination: AUC (C-statistic)
+-   Calibration: Calibration slope (1.0 = perfect; \<1.0 = overfitting)
+-   Overall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)
 
 # Results
 
@@ -228,7 +228,7 @@ all_stats %>%
   kable()
 ```
 
-**Key observation**: Bootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: `r sprintf("%.3f", bootstrap_cal_sd)` vs. Sample Split SD: `r sprintf("%.3f", split_cal_sd)`).
+Bootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: `r sprintf("%.3f", bootstrap_cal_sd)` vs. Sample Split SD: `r sprintf("%.3f", split_cal_sd)`).
 
 ## Bias and Precision
 
@@ -250,7 +250,7 @@ bias_rmse %>%
   kable()
 ```
 
-**Key observations**: - Bootstrap shows minimal bias across all metrics - Cross-validation slightly underestimates calibration slope (pessimistic) - Sample splitting has low bias on average but very high RMSE due to extreme variability
+Bootstrap shows minimal bias across all metrics - Cross-validation slightly underestimates calibration slope (pessimistic) - Sample splitting has low bias on average but very high RMSE due to extreme variability
 
 ## Visual Comparison
 
@@ -258,7 +258,7 @@ The following plots show the distribution of each metric across 200 simulations:
 
 ```{r}
 #| label: fig-auc
-#| fig-cap: "AUC (C-statistic) distributions. Higher is better for discrimination."
+#| fig-cap: "AUC (C-statistic) distributions"
 #| fig-width: 10
 #| fig-height: 6
 
@@ -267,7 +267,7 @@ knitr::include_graphics("comparison_auc.png")
 
 ```{r}
 #| label: fig-calibration
-#| fig-cap: "Calibration slope distributions. Perfect calibration = 1.0; overfitting < 1.0. Note the extreme variability of sample splitting."
+#| fig-cap: "Calibration slope distributions. Note the extreme variability of sample splitting."
 #| fig-width: 10
 #| fig-height: 6
 
@@ -276,7 +276,7 @@ knitr::include_graphics("comparison_calibration.png")
 
 ```{r}
 #| label: fig-brier
-#| fig-cap: "Brier score distributions. Lower is better."
+#| fig-cap: "Brier score distributions: lower is better."
 #| fig-width: 10
 #| fig-height: 6
 
@@ -285,7 +285,7 @@ knitr::include_graphics("comparison_brier.png")
 
 ```{r}
 #| label: fig-mape
-#| fig-cap: "Mean Absolute Prediction Error. Lower is better."
+#| fig-cap: "Mean Absolute Prediction Error: lower is better."
 #| fig-width: 10
 #| fig-height: 6
 
@@ -306,9 +306,15 @@ Sample splitting was problematic due to extreme variability (calibration slope S
 
 ## Comparison with Smith et al. (2014)
 
-These findings align with Smith et al.'s  study comparing internal validation methods. Both studies found: - Bootstrap, cross-validation (with replication), and leave-pair-out methods provide unbiased estimates - Sample splitting and cross-validation without replication show problematic performance - Bootstrap validation is recommended as the primary approach
+These findings align with Smith et al.'s  study comparing internal validation methods. Both studies found: 
+  - Bootstrap, cross-validation (with replication) methods provide unbiased estimates 
+  - Sample splitting shows problematic performance 
+  - Bootstrap validation is recommended as the primary approach
 
-Our study extends their work by: 1. Higher EPV: We used EPV=`r sprintf("%.1f", epv)` (via principled sample size calculation) vs. their EPV=5 (intentionally low to test challenging scenarios) 2. Multi-metric focus: While Smith et al. emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 3. Calibration emphasis: We highlight that sample splitting's variability problem is particularly severe for calibration assessment
+This study differs from their work by: 
+  1. Higher EPV: We used EPV=`r sprintf("%.1f", epv)` (via principled sample size calculation) vs. their EPV=5 (intentionally low to test challenging scenarios) 
+  2. Multi-metric focus: While Smith et al. emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 
+  3. Calibration emphasis: We highlight that sample splitting's variability problem is particularly severe for calibration assessment
 
 The consistency between studies strengthens the evidence for bootstrap validation in clinical prediction modeling.
 
@@ -319,8 +325,6 @@ For researchers developing prediction models:
 1.  Primary recommendation: Use bootstrap optimism correction (≥200 samples) via established implementations (e.g., `rms` package)
 2.  Alternative: 10-fold cross-validation with pooled predictions is acceptable if bootstrap is computationally prohibitive
 3.  Avoid: Sample splitting for calibration assessment due to extreme variability
-
-When to use each method: - Bootstrap: Always preferred when computationally feasible - Cross-validation: Acceptable for very large datasets or complex models where bootstrap is too slow - Sample splitting: Generally not recommended; if used, interpret with extreme caution
 
 ## Limitations
 
