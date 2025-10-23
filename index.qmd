@@ -1,5 +1,5 @@
 ---
-title: "Comparing Internal Validation Methods for Clinical Prediction Models"
+title: "Comparing Internal Validation Methods for Clinical Risk Prediction"
 subtitle: "A Simulation Study"
 author: "Ashley Dickson"
 date: today

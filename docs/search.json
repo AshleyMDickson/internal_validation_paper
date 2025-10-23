@@ -2,7 +2,7 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "",
     "text": "This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models. It uses 200 simulations with realistic sample sizes (n=858) and evaluates performance across several metrics.\n\n\n\n\n\n\nNoteKey Findings\n\n\n\nBootstrap validation performs best overall, with minimal bias and exceptional stability, especially for calibration assessment.\nSample splitting is unreliable - it shows extreme variability in calibration slope estimates (SD 14 times higher than bootstrap), making it unsuitable for calibration assessment.\nCross-validation is acceptable as an alternative to bootstrap, providing reasonably stable estimates with slight pessimistic bias.\nMain recommendation: Use bootstrap validation (200+ samples) for internal validation. Cross-validation is acceptable if bootstrap is too computationally intensive. Avoid sample splitting."
   },
@@ -37,7 +37,7 @@
   {
     "objectID": "index.html#data-generating-process",
     "href": "index.html#data-generating-process",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.1 Data Generating Process",
     "text": "3.1 Data Generating Process\nSimulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.956) calculated to achieve exactly 15% prevalence\nModel equation:\n\\[\n\\text{logit}(P(\\text{outcome}=1)) = -1.956 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}\n\\]"
   },
@@ -58,7 +58,7 @@
   {
     "objectID": "index.html#performance-metrics",
     "href": "index.html#performance-metrics",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.4 Performance Metrics",
     "text": "3.4 Performance Metrics\n\nDiscrimination: AUC (C-statistic)\nCalibration: Calibration slope (1.0 = perfect; &lt;1.0 = overfitting)\nOverall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)"
   },
@@ -79,7 +79,7 @@
   {
     "objectID": "index.html#visual-comparison",
     "href": "index.html#visual-comparison",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "4.3 Visual Comparison",
     "text": "4.3 Visual Comparison\nThe following plots show the distribution of each metric across 200 simulations:\n\n\n\n\n\n\n\n\nFigure 1: AUC (C-statistic) distributions\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: Calibration slope distributions. Note the extreme variability of sample splitting.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3: Brier score distributions: lower is better.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 4: Mean Absolute Prediction Error: lower is better.\n\n\n\n\n\nFigure 2 demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small."
   },
@@ -107,7 +107,7 @@
   {
     "objectID": "index.html#limitations",
     "href": "index.html#limitations",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "5.4 Limitations",
     "text": "5.4 Limitations\n\nSingle scenario (10 predictors, 15% prevalence, moderate discrimination)\nLogistic regression only (non-linear models may behave differently)\nIndependent predictors (correlation might affect performance)\nModerate sample size (n≈1,000); very small/large samples may show different patterns"
   },
@@ -142,63 +142,63 @@
   {
     "objectID": "index.html#sample-sizes",
     "href": "index.html#sample-sizes",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.2 Sample Sizes",
     "text": "3.2 Sample Sizes\n\nDevelopment: n=858 (129 events, EPV=12.9)\n\nDetermined using principled criteria (Riley et al. 2020) via samplesizedev package\n\nExternal validation: n=1e+05 (asymptotic truth)\nSimulations: 200 iterations"
   },
   {
     "objectID": "index.html#methods-compared",
     "href": "index.html#methods-compared",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.3 Methods Compared",
     "text": "3.3 Methods Compared\nFor each simulation:\n\nApparent validation - Optimistic test on development data (baseline)\nSample Split - 70/30 split\n10-fold Cross-validation - Stratified folds with pooled predictions\nBootstrap - Harrell’s optimism correction (200 resamples)\nExternal validation - Independent large dataset (gold standard)"
   },
   {
     "objectID": "index.html#performance-summary",
     "href": "index.html#performance-summary",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "4.1 Performance Summary",
     "text": "4.1 Performance Summary\nTable 1 shows performance across all validation approaches. Apparent validation is optimistic (as expected), while all internal methods successfully correct for this optimism to varying degrees.\n\n\n\n\nTable 1: Mean (SD) of performance metrics across 200 simulations\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC\nCal. Slope\nBrier\nMAPE\n\n\n\n\nApparent\n0.728 (0.022)\n1.000 (0.000)\n0.116 (0.007)\n0.232 (0.014)\n\n\nBootstrap\n0.704 (0.025)\n0.879 (0.021)\n0.120 (0.007)\n0.235 (0.014)\n\n\nCross-validation\n0.697 (0.026)\n0.817 (0.041)\n0.120 (0.007)\n0.235 (0.014)\n\n\nSample Split\n0.697 (0.048)\n0.835 (0.287)\n0.121 (0.014)\n0.235 (0.016)\n\n\nExternal\n0.704 (0.007)\n0.871 (0.107)\n0.119 (0.001)\n0.235 (0.007)\n\n\n\n\n\n\n\n\nBootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: 0.021 vs. Sample Split SD: 0.287)."
   },
   {
     "objectID": "index.html#bias-and-precision",
     "href": "index.html#bias-and-precision",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "4.2 Bias and Precision",
     "text": "4.2 Bias and Precision\nTable 2 compares internal methods to external validation. Lower bias and RMSE indicate better performance.\n\n\n\n\nTable 2: Bias and RMSE relative to external validation\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC\nCal. Slope\nBrier\nMAPE\n\n\n\n\nBootstrap\n0.000 (0.024)\n0.008 (0.124)\n0.000 (0.007)\n0.000 (0.008)\n\n\nCross-validation\n-0.007 (0.026)\n-0.054 (0.149)\n0.000 (0.007)\n0.000 (0.008)\n\n\nSample Split\n-0.007 (0.048)\n-0.036 (0.311)\n0.001 (0.014)\n-0.000 (0.012)\n\n\n\n\n\n\n\n\nBootstrap shows minimal bias across all metrics - Cross-validation slightly underestimates calibration slope (pessimistic) - Sample splitting has low bias on average but very high RMSE due to extreme variability"
   },
   {
     "objectID": "index.html#main-findings",
     "href": "index.html#main-findings",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "5.1 Main Findings",
     "text": "5.1 Main Findings\nBootstrap validation consistently outperformed other methods: - Minimal bias across all metrics (AUC bias: 0.000, calibration slope bias: 0.008) - Most stable estimates (especially calibration slope SD: 0.021) - Lowest RMSE for calibration slope (0.124)\nCross-validation performed well as a computationally simpler alternative, with slight pessimistic bias for calibration but acceptable variability.\nSample splitting was problematic due to extreme variability (calibration slope SD 14× higher than bootstrap), making individual estimates unreliable despite low average bias across many simulations."
   },
   {
     "objectID": "index.html#comparison-with-smith-et-al.-2014",
     "href": "index.html#comparison-with-smith-et-al.-2014",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "5.2 Comparison with Smith et al. (2014)",
     "text": "5.2 Comparison with Smith et al. (2014)\nThese findings align with Smith et al.’s study comparing internal validation methods. Both studies found: - Bootstrap, cross-validation (with replication) methods provide unbiased estimates - Sample splitting shows problematic performance - Bootstrap validation is recommended as the primary approach\nThis study differs from their work by: 1. Higher EPV: We used EPV=12.9 (via principled sample size calculation) vs. their EPV=5 (intentionally low to test challenging scenarios) 2. Multi-metric focus: While Smith et al. emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 3. Calibration emphasis: We highlight that sample splitting’s variability problem is particularly severe for calibration assessment\nThe consistency between studies strengthens the evidence for bootstrap validation in clinical prediction modeling."
   },
   {
     "objectID": "index.html#practical-recommendations",
     "href": "index.html#practical-recommendations",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "5.3 Practical Recommendations",
     "text": "5.3 Practical Recommendations\nFor researchers developing prediction models:\n\nPrimary recommendation: Use bootstrap optimism correction (≥200 samples) via established implementations (e.g., rms package)\nAlternative: 10-fold cross-validation with pooled predictions is acceptable if bootstrap is computationally prohibitive\nAvoid: Sample splitting for calibration assessment due to extreme variability"
   },
   {
     "objectID": "index.html#conclusions",
     "href": "index.html#conclusions",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "5.5 Conclusions",
     "text": "5.5 Conclusions\nFor clinical prediction models with moderate sample sizes, bootstrap validation provides the most reliable estimates of external performance. Cross-validation is an acceptable alternative. Sample splitting should be avoided, especially for calibration assessment, due to extreme variability that makes individual estimates unreliable."
   },
   {
     "objectID": "index.html#code-and-data-availability",
     "href": "index.html#code-and-data-availability",
-    "title": "Comparing Internal Validation Methods for Clinical Prediction Models",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "5.6 Code and Data Availability",
     "text": "5.6 Code and Data Availability\nAll simulation code and generated data are available at [https://github.com/AshleyMDickson/internal_validation_paper.git]."
   },
