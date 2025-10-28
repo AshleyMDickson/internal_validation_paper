@@ -123,7 +123,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Internal Validation</span></a>
   </li>  
   <li class="nav-item">
@@ -210,7 +210,7 @@ window.Quarto = {
 
 <section id="overview" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Overview</h1>
-<p>This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models. It uses 500 simulations with realistic sample sizes (n=858) and evaluates performance across several metrics.</p>
+<p>This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models. It uses 200 simulations with realistic sample sizes (n=858) and evaluates performance across several metrics.</p>
 <div class="callout callout-style-simple callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -237,10 +237,10 @@ window.Quarto = {
 <h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
 <section id="data-generating-process" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="data-generating-process"><span class="header-section-number">3.1</span> Data Generating Process</h2>
-<p>Simulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.9524) calculated to achieve exactly 15% prevalence</p>
+<p>Simulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.956) calculated to achieve exactly 15% prevalence</p>
 <p>Model equation:</p>
 <p><span class="math display">\[
-\text{logit}(P(\text{outcome}=1)) = -1.9524 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}
+\text{logit}(P(\text{outcome}=1)) = -1.956 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}
 \]</span></p>
 </section>
 <section id="sample-sizes" class="level2" data-number="3.2">
@@ -251,7 +251,7 @@ window.Quarto = {
 <li>Determined using <code>samplesizedev</code> package</li>
 </ul></li>
 <li>External validation: n=1e+05 (asymptotic truth)</li>
-<li>Simulations: 500 iterations</li>
+<li>Simulations: 200 iterations</li>
 </ul>
 </section>
 <section id="methods-compared" class="level2" data-number="3.3">
@@ -283,7 +283,7 @@ window.Quarto = {
 <div id="tbl-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Mean (SD) of performance metrics across <code>r n_simulations</code> simulations
+Table&nbsp;1: Mean (SD) of performance metrics across 200 simulations
 </figcaption>
 <div aria-describedby="tbl-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -410,7 +410,7 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 </section>
 <section id="visual-comparison" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="visual-comparison"><span class="header-section-number">4.3</span> Visual Comparison</h2>
-<p>The following plots show the distribution of each metric across 500 simulations:</p>
+<p>The following plots show the distribution of each metric across 200 simulations:</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-auc" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -427,41 +427,13 @@ Figure&nbsp;1: AUC (C-statistic) distributions
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-auc-density" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-auc-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="density_auc.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-auc-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: AUC distribution density plots showing overlap between methods
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
 <div id="fig-calibration" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-calibration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="comparison_calibration.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Calibration slope distributions. Note the extreme variability of sample splitting.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-calibration-density" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-calibration-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="density_calibration.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibration-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Calibration slope density plots highlighting sample splitting’s extreme variability
+Figure&nbsp;2: Calibration slope distributions. Note the extreme variability of sample splitting.
 </figcaption>
 </figure>
 </div>
@@ -475,21 +447,7 @@ Figure&nbsp;4: Calibration slope density plots highlighting sample splitting’s
 <img src="comparison_brier.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-brier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Brier score distributions: lower is better.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-brier-density" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-brier-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="density_brier.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-brier-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Brier score density plots showing performance distributions
+Figure&nbsp;3: Brier score distributions: lower is better.
 </figcaption>
 </figure>
 </div>
@@ -503,27 +461,13 @@ Figure&nbsp;6: Brier score density plots showing performance distributions
 <img src="comparison_mape.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7: Mean Absolute Prediction Error: lower is better.
+Figure&nbsp;4: Mean Absolute Prediction Error: lower is better.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-mape-density" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-mape-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="density_mape.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mape-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8: MAPE density plots showing prediction error distributions
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p><a href="#fig-calibration" class="quarto-xref">Figure&nbsp;3</a> demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small.</p>
+<p><a href="#fig-calibration" class="quarto-xref">Figure&nbsp;2</a> demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small.</p>
 </section>
 </section>
 <section id="discussion" class="level1" data-number="5">
