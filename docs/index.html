@@ -164,7 +164,7 @@ window.Quarto = {
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">5</span> Discussion</a>
   <ul class="collapse">
   <li><a href="#main-findings" id="toc-main-findings" class="nav-link" data-scroll-target="#main-findings"><span class="header-section-number">5.1</span> Main Findings</a></li>
-  <li><a href="#comparison-with-smith-et-al." id="toc-comparison-with-smith-et-al." class="nav-link" data-scroll-target="#comparison-with-smith-et-al."><span class="header-section-number">5.2</span> Comparison with Smith et al.</a></li>
+  <li><a href="#comparison-with-smith-et-al.-2014" id="toc-comparison-with-smith-et-al.-2014" class="nav-link" data-scroll-target="#comparison-with-smith-et-al.-2014"><span class="header-section-number">5.2</span> Comparison with Smith et al.&nbsp;(2014)</a></li>
   <li><a href="#practical-recommendations" id="toc-practical-recommendations" class="nav-link" data-scroll-target="#practical-recommendations"><span class="header-section-number">5.3</span> Practical Recommendations</a></li>
   <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">5.4</span> Limitations</a></li>
   <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions"><span class="header-section-number">5.5</span> Conclusions</a></li>
@@ -237,10 +237,10 @@ window.Quarto = {
 <h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
 <section id="data-generating-process" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="data-generating-process"><span class="header-section-number">3.1</span> Data Generating Process</h2>
-<p>Simulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.9524) calculated to achieve exactly 15% prevalence</p>
+<p>Simulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.9665) calculated to achieve exactly 15% prevalence</p>
 <p>Model equation:</p>
 <p><span class="math display">\[
-\text{logit}(P(\text{outcome}=1)) = -1.9524 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}
+\text{logit}(P(\text{outcome}=1)) = -1.9665 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}
 \]</span></p>
 </section>
 <section id="sample-sizes" class="level2" data-number="3.2">
@@ -258,9 +258,9 @@ window.Quarto = {
 <h2 data-number="3.3" class="anchored" data-anchor-id="methods-compared"><span class="header-section-number">3.3</span> Methods Compared</h2>
 <p>For each simulation:</p>
 <ol type="1">
-<li>Apparent validation - Optimistic test on development data</li>
+<li>Apparent validation - Optimistic test on development data (baseline)</li>
 <li>Sample Split - 70/30 split</li>
-<li>10-fold Cross-validation - 10 folds with pooled predictions</li>
+<li>10-fold Cross-validation - Stratified folds with pooled predictions</li>
 <li>Bootstrap - Harrell’s optimism correction (200 resamples)</li>
 <li>External validation - Independent large dataset</li>
 </ol>
@@ -309,36 +309,36 @@ Table&nbsp;1: Mean (SD) of performance metrics across <code>r n_simulations</cod
 <td style="text-align: left;">Apparent</td>
 <td style="text-align: left;">0.728 (0.023)</td>
 <td style="text-align: left;">1.000 (0.000)</td>
-<td style="text-align: left;">0.116 (0.007)</td>
-<td style="text-align: left;">0.232 (0.015)</td>
+<td style="text-align: left;">0.115 (0.007)</td>
+<td style="text-align: left;">0.230 (0.015)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bootstrap</td>
 <td style="text-align: left;">0.704 (0.026)</td>
 <td style="text-align: left;">0.878 (0.021)</td>
-<td style="text-align: left;">0.120 (0.008)</td>
-<td style="text-align: left;">0.236 (0.015)</td>
+<td style="text-align: left;">0.119 (0.008)</td>
+<td style="text-align: left;">0.234 (0.015)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Cross-validation</td>
-<td style="text-align: left;">0.696 (0.027)</td>
-<td style="text-align: left;">0.813 (0.041)</td>
-<td style="text-align: left;">0.120 (0.008)</td>
-<td style="text-align: left;">0.236 (0.015)</td>
+<td style="text-align: left;">0.696 (0.028)</td>
+<td style="text-align: left;">0.812 (0.042)</td>
+<td style="text-align: left;">0.119 (0.008)</td>
+<td style="text-align: left;">0.234 (0.015)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Sample Split</td>
-<td style="text-align: left;">0.695 (0.045)</td>
-<td style="text-align: left;">0.820 (0.240)</td>
-<td style="text-align: left;">0.121 (0.014)</td>
-<td style="text-align: left;">0.236 (0.017)</td>
+<td style="text-align: left;">0.696 (0.046)</td>
+<td style="text-align: left;">0.821 (0.243)</td>
+<td style="text-align: left;">0.120 (0.014)</td>
+<td style="text-align: left;">0.234 (0.017)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">External</td>
 <td style="text-align: left;">0.704 (0.007)</td>
-<td style="text-align: left;">0.877 (0.109)</td>
-<td style="text-align: left;">0.119 (0.001)</td>
-<td style="text-align: left;">0.235 (0.007)</td>
+<td style="text-align: left;">0.875 (0.108)</td>
+<td style="text-align: left;">0.118 (0.001)</td>
+<td style="text-align: left;">0.233 (0.007)</td>
 </tr>
 </tbody>
 </table>
@@ -347,7 +347,7 @@ Table&nbsp;1: Mean (SD) of performance metrics across <code>r n_simulations</cod
 </figure>
 </div>
 </div>
-<p>Bootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: 0.021 vs.&nbsp;Sample Split SD: 0.240).</p>
+<p>Bootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: 0.021 vs.&nbsp;Sample Split SD: 0.243).</p>
 </section>
 <section id="bias-and-precision" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="bias-and-precision"><span class="header-section-number">4.2</span> Bias and Precision</h2>
@@ -380,31 +380,24 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Bootstrap</td>
-<td style="text-align: left;">-0.000 (0.026)</td>
-<td style="text-align: left;">0.002 (0.126)</td>
+<td style="text-align: left;">0.000 (0.026)</td>
+<td style="text-align: left;">0.003 (0.126)</td>
 <td style="text-align: left;">0.000 (0.008)</td>
 <td style="text-align: left;">0.000 (0.008)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Cross-validation</td>
 <td style="text-align: left;">-0.008 (0.028)</td>
-<td style="text-align: left;">-0.064 (0.155)</td>
+<td style="text-align: left;">-0.063 (0.154)</td>
 <td style="text-align: left;">0.001 (0.008)</td>
 <td style="text-align: left;">0.000 (0.008)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Sample Split</td>
-<td style="text-align: left;">-0.008 (0.045)</td>
-<td style="text-align: left;">-0.056 (0.283)</td>
+<td style="text-align: left;">-0.008 (0.046)</td>
+<td style="text-align: left;">-0.053 (0.287)</td>
 <td style="text-align: left;">0.001 (0.014)</td>
 <td style="text-align: left;">0.001 (0.012)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">External</td>
-<td style="text-align: left;">0.000 (0.007)</td>
-<td style="text-align: left;">0.000 (0.109)</td>
-<td style="text-align: left;">0.000 (0.001)</td>
-<td style="text-align: left;">0.000 (0.007)</td>
 </tr>
 </tbody>
 </table>
@@ -413,7 +406,7 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 </figure>
 </div>
 </div>
-<p>Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, as shown in <a href="#fig-calibration" class="quarto-xref">Figure&nbsp;3</a>, bootstrap and cross-validation achieve tighter distributions (lower variability) than even the external validation baseline. Bootstrap calibration slope RMSE (0.126) is comparable to external SD (0.109), demonstrating the stability of the optimism correction approach.</p>
+<p>Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, as shown in <a href="#fig-calibration" class="quarto-xref">Figure&nbsp;3</a>, bootstrap and cross-validation achieve tighter distributions (lower variability) than even the external validation baseline - likely due to the variance reduction from averaging across multiple resamples. Bootstrap calibration slope SD (0.021) is lower than external SD (0.108), demonstrating the stability of the optimism correction approach.</p>
 </section>
 <section id="visual-comparison" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="visual-comparison"><span class="header-section-number">4.3</span> Visual Comparison</h2>
@@ -510,7 +503,7 @@ Figure&nbsp;6: Brier score density plots showing performance distributions
 <img src="comparison_mape.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7: Mean Absolute Prediction Error
+Figure&nbsp;7: Mean Absolute Prediction Error: lower is better.
 </figcaption>
 </figure>
 </div>
@@ -537,12 +530,12 @@ Figure&nbsp;8: MAPE density plots showing prediction error distributions
 <h1 data-number="5"><span class="header-section-number">5</span> Discussion</h1>
 <section id="main-findings" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="main-findings"><span class="header-section-number">5.1</span> Main Findings</h2>
-<p>Bootstrap validation consistently outperformed other methods: - Minimal bias across all metrics (AUC bias: -0.000, calibration slope bias: 0.002) - Most stable estimates (especially calibration slope SD: 0.021) - Lowest RMSE for calibration slope (0.126)</p>
+<p>Bootstrap validation consistently outperformed other methods: - Minimal bias across all metrics (AUC bias: 0.000, calibration slope bias: 0.003) - Most stable estimates (especially calibration slope SD: 0.021) - Lowest RMSE for calibration slope (0.126)</p>
 <p>Cross-validation performed well as a computationally simpler alternative, with slight pessimistic bias for calibration but acceptable variability.</p>
 <p>Sample splitting was problematic due to extreme variability (calibration slope SD 12× higher than bootstrap), making individual estimates unreliable despite low average bias across many simulations.</p>
 </section>
-<section id="comparison-with-smith-et-al." class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="comparison-with-smith-et-al."><span class="header-section-number">5.2</span> Comparison with Smith et al.</h2>
+<section id="comparison-with-smith-et-al.-2014" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="comparison-with-smith-et-al.-2014"><span class="header-section-number">5.2</span> Comparison with Smith et al.&nbsp;(2014)</h2>
 <p>These findings align with Smith et al.’s study comparing internal validation methods. Both studies found: - Bootstrap, cross-validation (with replication) methods provide unbiased estimates - Sample splitting shows problematic performance - Bootstrap validation is recommended as the primary approach</p>
 <p>This study differs from their work by: 1. Higher EPV: We used EPV=12.9 (via principled sample size calculation) vs.&nbsp;their EPV=5 (intentionally low to test challenging scenarios) 2. Multi-metric focus: While Smith et al.&nbsp;emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 3. Calibration emphasis: We highlight that sample splitting’s variability problem is particularly severe for calibration assessment</p>
 <p>The consistency between studies strengthens the evidence for bootstrap validation in clinical prediction modeling.</p>

@@ -45,7 +45,7 @@ calculate_performance_metrics <- function(y_true, y_pred) {
 
 expit <- function(x) 1 / (1 + exp(-x))
 
-n_sample <- 10000
+n_sample <- 100000
 X_sample <- replicate(10, rnorm(n_sample))
 beta <- c(0.45, 0.40, -0.35, 0.30, -0.25, 0.20, 0.15, 0.10, 0.08, 0.05)
 target_prev <- 0.15

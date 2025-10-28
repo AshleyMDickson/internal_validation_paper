@@ -1,11 +1,11 @@
 "parameter","value"
-"alpha",-1.95240811515533
+"alpha",-1.96647247532406
 "n_dev",858
 "n_events",129
 "epv",12.9
 "n_ext",1e+05
 "target_prev",0.15
-"observed_prev",0.1511
+"observed_prev",0.14987
 "n_predictors",10
 "n_simulations",500
 "n_bootstrap",200

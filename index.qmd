@@ -107,22 +107,6 @@ bias_rmse <- results %>%
     mape_rmse = sqrt(mean((internal_mape - external_mape)^2))
   )
 
-# Add External validation row (bias = 0, "RMSE" = SD for display purposes)
-# Note: For External, we show SD not RMSE since bias=0 by definition
-external_bias_rmse <- data.frame(
-  method = "External",
-  auc_bias = 0,
-  auc_rmse = external_stats$auc_sd,
-  cal_slope_bias = 0,
-  cal_slope_rmse = external_stats$cal_slope_sd,
-  brier_bias = 0,
-  brier_rmse = external_stats$brier_sd,
-  mape_bias = 0,
-  mape_rmse = external_stats$mape_sd
-)
-
-bias_rmse_with_external <- bind_rows(bias_rmse, external_bias_rmse)
-
 # Extract key values for inline text
 bootstrap_cal_sd <- all_stats %>% filter(method == "Bootstrap") %>% pull(cal_slope_sd)
 cv_cal_sd <- all_stats %>% filter(method == "Cross-validation") %>% pull(cal_slope_sd)
@@ -181,15 +165,15 @@ $$
 -   Development: n=`r n_dev` (`r n_events` events, EPV=`r sprintf("%.1f", epv)`)
     -   Determined using `samplesizedev` package
 -   External validation: n=`r format(n_ext, big.mark = ",", scientific = FALSE)`
--   Simulations: 500 iterations
+-   Simulations: `r n_simulations` iterations
 
 ## Methods Compared
 
 For each simulation:
 
-1.  Apparent validation - Optimistic test on development data
+1.  Apparent validation - Optimistic test on development data (baseline)
 2.  Sample Split - 70/30 split
-3.  10-fold Cross-validation - 10 folds with pooled predictions
+3.  10-fold Cross-validation - Stratified folds with pooled predictions
 4.  Bootstrap - Harrell's optimism correction (200 resamples)
 5.  External validation - Independent large dataset
 
@@ -231,7 +215,7 @@ Bootstrap and cross-validation show much lower standard deviations than sample s
 #| label: tbl-bias
 #| tbl-cap: "Bias and RMSE relative to external validation"
 
-bias_rmse_with_external %>%
+bias_rmse %>%
   mutate(
     Method = method,
     `AUC` = sprintf("%.3f (%.3f)", auc_bias, auc_rmse),
@@ -243,11 +227,11 @@ bias_rmse_with_external %>%
   kable()
 ```
 
-Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, as shown in @fig-calibration, bootstrap and cross-validation achieve tighter distributions (lower variability) than even the external validation baseline. Bootstrap calibration slope RMSE (`r sprintf("%.3f", bootstrap_cal_rmse)`) is comparable to external SD (`r sprintf("%.3f", external_cal_sd)`), demonstrating the stability of the optimism correction approach.
+Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, as shown in @fig-calibration, bootstrap and cross-validation achieve tighter distributions (lower variability) than even the external validation baseline - likely due to the variance reduction from averaging across multiple resamples. Bootstrap calibration slope SD (`r sprintf("%.3f", bootstrap_cal_sd)`) is lower than external SD (`r sprintf("%.3f", external_cal_sd)`), demonstrating the stability of the optimism correction approach.
 
 ## Visual Comparison
 
-The following plots show the distribution of each metric across 500 simulations:
+The following plots show the distribution of each metric across `r n_simulations` simulations:
 
 ```{r}
 #| label: fig-auc
@@ -305,7 +289,7 @@ knitr::include_graphics("density_brier.png")
 
 ```{r}
 #| label: fig-mape
-#| fig-cap: "Mean Absolute Prediction Error"
+#| fig-cap: "Mean Absolute Prediction Error: lower is better."
 #| fig-width: 10
 #| fig-height: 6
 
@@ -336,7 +320,7 @@ Cross-validation performed well as a computationally simpler alternative, with s
 
 Sample splitting was problematic due to extreme variability (calibration slope SD `r round(split_bootstrap_ratio)`× higher than bootstrap), making individual estimates unreliable despite low average bias across many simulations.
 
-## Comparison with Smith et al.
+## Comparison with Smith et al. (2014)
 
 These findings align with Smith et al.'s study comparing internal validation methods. Both studies found: 
 - Bootstrap, cross-validation (with replication) methods provide unbiased estimates 
