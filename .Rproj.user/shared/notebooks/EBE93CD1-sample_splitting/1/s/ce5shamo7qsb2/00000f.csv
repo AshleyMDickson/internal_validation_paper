@@ -1,6 +1,0 @@
-"0","fractions <- seq(0.01, 1.21, by = 0.10) # exclude 0 to avoid errors"
-"0","slopes <- vapply(fractions, find_cs, numeric(1))"
-"0","results <- data.frame("
-"0","  fraction = fractions,"
-"0","  slope    = slopes"
-"0",")"

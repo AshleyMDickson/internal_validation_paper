@@ -39,7 +39,7 @@
     "href": "index.html#data-generating-process",
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.1 Data Generating Process",
-    "text": "3.1 Data Generating Process\nSimulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.9524) calculated to achieve exactly 15% prevalence\nModel equation:\n\\[\n\\text{logit}(P(\\text{outcome}=1)) = -1.9524 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}\n\\]"
+    "text": "3.1 Data Generating Process\nSimulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.9524) calculated to achieve exactly 15% prevalence\nModel equation:\n\\[\n\\text{logit}(P(\\text{outcome}=1)) = -1.9524 + 0.45X_1 + 0.4X_2 - 0.35X_3 + 0.3X_4 - 0.25X_5 + 0.2X_6 + 0.15X_7 + 0.1X_8 + 0.08X_9 + 0.05X_{10}\n\\]"
   },
   {
     "objectID": "index.html#sample-size-determination",
@@ -60,7 +60,7 @@
     "href": "index.html#performance-metrics",
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.4 Performance Metrics",
-    "text": "3.4 Performance Metrics\n\nDiscrimination: AUC (C-statistic)\nCalibration: Calibration slope (1.0 = perfect; &lt;1.0 = overfitting)\nOverall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)"
+    "text": "3.4 Performance Metrics\n\nDiscrimination: AUC (C-statistic). The true model has a C-statistic of 0.704.\nCalibration: Calibration slope (1.0 = perfect; &lt;1.0 = overfitting)\nOverall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)"
   },
   {
     "objectID": "index.html#summary-statistics",
@@ -144,14 +144,14 @@
     "href": "index.html#sample-sizes",
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.2 Sample Sizes",
-    "text": "3.2 Sample Sizes\n\nDevelopment: n=858 (129 events, EPV=12.9)\n\nDetermined using samplesizedev package\n\nExternal validation: n=1e+05 (asymptotic truth)\nSimulations: 500 iterations"
+    "text": "3.2 Sample Sizes\n\nDevelopment: n=858 (129 events, EPV=12.9)\n\nDetermined using samplesizedev package\n\nExternal validation: n=100,000\nSimulations: 500 iterations"
   },
   {
     "objectID": "index.html#methods-compared",
     "href": "index.html#methods-compared",
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.3 Methods Compared",
-    "text": "3.3 Methods Compared\nFor each simulation:\n\nApparent validation - Optimistic test on development data (baseline)\nSample Split - 70/30 split\n10-fold Cross-validation - Stratified folds with pooled predictions\nBootstrap - Harrell’s optimism correction (200 resamples)\nExternal validation - Independent large dataset (gold standard)"
+    "text": "3.3 Methods Compared\nFor each simulation:\n\nApparent validation - Optimistic test on development data (baseline)\nSample Split - 70/30 split\n10-fold Cross-validation - 10 folds with pooled predictions\nBootstrap - Harrell’s optimism correction (200 resamples)\nExternal validation - Independent large dataset (gold standard)"
   },
   {
     "objectID": "index.html#performance-summary",
@@ -165,7 +165,7 @@
     "href": "index.html#bias-and-precision",
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "4.2 Bias and Precision",
-    "text": "4.2 Bias and Precision\nTable 2 compares internal methods to external validation. Lower bias and RMSE indicate better performance.\n\n\n\n\nTable 2: Bias and RMSE relative to external validation\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC\nCal. Slope\nBrier\nMAPE\n\n\n\n\nBootstrap\n-0.000 (0.026)\n0.002 (0.126)\n0.000 (0.008)\n0.000 (0.008)\n\n\nCross-validation\n-0.008 (0.028)\n-0.064 (0.155)\n0.001 (0.008)\n0.000 (0.008)\n\n\nSample Split\n-0.008 (0.045)\n-0.056 (0.283)\n0.001 (0.014)\n0.001 (0.012)\n\n\n\n\n\n\n\n\nBootstrap shows minimal bias across all metrics - Cross-validation slightly underestimates calibration slope (pessimistic) - Sample splitting has low bias on average but very high RMSE due to extreme variability"
+    "text": "4.2 Bias and Precision\nTable 2 compares internal methods to external validation. Lower bias and RMSE indicate better performance.\n\n\n\n\nTable 2: Bias and RMSE relative to external validation\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC\nCal. Slope\nBrier\nMAPE\n\n\n\n\nBootstrap\n-0.000 (0.026)\n0.002 (0.126)\n0.000 (0.008)\n0.000 (0.008)\n\n\nCross-validation\n-0.008 (0.028)\n-0.064 (0.155)\n0.001 (0.008)\n0.000 (0.008)\n\n\nSample Split\n-0.008 (0.045)\n-0.056 (0.283)\n0.001 (0.014)\n0.001 (0.012)\n\n\nExternal\n0.000 (0.007)\n0.000 (0.109)\n0.000 (0.001)\n0.000 (0.007)\n\n\n\n\n\n\n\n\nBootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, bootstrap achieves calibration slope precision (SD: 0.021) that is even better than the external validation baseline (SD: 0.109), demonstrating the stability of the optimism correction approach."
   },
   {
     "objectID": "index.html#main-findings",

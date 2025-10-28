@@ -240,7 +240,7 @@ window.Quarto = {
 <p>Simulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.9524) calculated to achieve exactly 15% prevalence</p>
 <p>Model equation:</p>
 <p><span class="math display">\[
-\text{logit}(P(\text{outcome}=1)) = -1.9524 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}
+\text{logit}(P(\text{outcome}=1)) = -1.9524 + 0.45X_1 + 0.4X_2 - 0.35X_3 + 0.3X_4 - 0.25X_5 + 0.2X_6 + 0.15X_7 + 0.1X_8 + 0.08X_9 + 0.05X_{10}
 \]</span></p>
 </section>
 <section id="sample-sizes" class="level2" data-number="3.2">
@@ -250,7 +250,7 @@ window.Quarto = {
 <ul>
 <li>Determined using <code>samplesizedev</code> package</li>
 </ul></li>
-<li>External validation: n=1e+05 (asymptotic truth)</li>
+<li>External validation: n=100,000</li>
 <li>Simulations: 500 iterations</li>
 </ul>
 </section>
@@ -260,7 +260,7 @@ window.Quarto = {
 <ol type="1">
 <li>Apparent validation - Optimistic test on development data (baseline)</li>
 <li>Sample Split - 70/30 split</li>
-<li>10-fold Cross-validation - Stratified folds with pooled predictions</li>
+<li>10-fold Cross-validation - 10 folds with pooled predictions</li>
 <li>Bootstrap - Harrell’s optimism correction (200 resamples)</li>
 <li>External validation - Independent large dataset (gold standard)</li>
 </ol>
@@ -268,7 +268,7 @@ window.Quarto = {
 <section id="performance-metrics" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="performance-metrics"><span class="header-section-number">3.4</span> Performance Metrics</h2>
 <ul>
-<li>Discrimination: AUC (C-statistic)</li>
+<li>Discrimination: AUC (C-statistic). The true model has a C-statistic of 0.704.</li>
 <li>Calibration: Calibration slope (1.0 = perfect; &lt;1.0 = overfitting)</li>
 <li>Overall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)</li>
 </ul>
@@ -399,6 +399,13 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 <td style="text-align: left;">0.001 (0.014)</td>
 <td style="text-align: left;">0.001 (0.012)</td>
 </tr>
+<tr class="even">
+<td style="text-align: left;">External</td>
+<td style="text-align: left;">0.000 (0.007)</td>
+<td style="text-align: left;">0.000 (0.109)</td>
+<td style="text-align: left;">0.000 (0.001)</td>
+<td style="text-align: left;">0.000 (0.007)</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -406,7 +413,7 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 </figure>
 </div>
 </div>
-<p>Bootstrap shows minimal bias across all metrics - Cross-validation slightly underestimates calibration slope (pessimistic) - Sample splitting has low bias on average but very high RMSE due to extreme variability</p>
+<p>Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, bootstrap achieves calibration slope precision (SD: 0.021) that is even better than the external validation baseline (SD: 0.109), demonstrating the stability of the optimism correction approach.</p>
 </section>
 <section id="visual-comparison" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="visual-comparison"><span class="header-section-number">4.3</span> Visual Comparison</h2>

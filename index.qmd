@@ -107,14 +107,34 @@ bias_rmse <- results %>%
     mape_rmse = sqrt(mean((internal_mape - external_mape)^2))
   )
 
+# Add External validation row (bias = 0, RMSE = SD)
+external_bias_rmse <- data.frame(
+  method = "External",
+  auc_bias = 0,
+  auc_rmse = external_stats$auc_sd,
+  cal_slope_bias = 0,
+  cal_slope_rmse = external_stats$cal_slope_sd,
+  brier_bias = 0,
+  brier_rmse = external_stats$brier_sd,
+  mape_bias = 0,
+  mape_rmse = external_stats$mape_sd
+)
+
+bias_rmse_with_external <- bind_rows(bias_rmse, external_bias_rmse)
+
 # Extract key values for inline text
 bootstrap_cal_sd <- all_stats %>% filter(method == "Bootstrap") %>% pull(cal_slope_sd)
 cv_cal_sd <- all_stats %>% filter(method == "Cross-validation") %>% pull(cal_slope_sd)
 split_cal_sd <- all_stats %>% filter(method == "Sample Split") %>% pull(cal_slope_sd)
+external_cal_sd <- external_stats$cal_slope_sd
 bootstrap_auc_bias <- bias_rmse %>% filter(method == "Bootstrap") %>% pull(auc_bias)
 bootstrap_cal_bias <- bias_rmse %>% filter(method == "Bootstrap") %>% pull(cal_slope_bias)
 bootstrap_cal_rmse <- bias_rmse %>% filter(method == "Bootstrap") %>% pull(cal_slope_rmse)
 split_bootstrap_ratio <- split_cal_sd / bootstrap_cal_sd
+
+# Calculate true C-statistic from the data generating process
+# This is the discriminative ability of the true model
+true_auc <- external_stats$auc_mean
 ```
 
 # Overview
@@ -152,14 +172,14 @@ Simulated scenario:
 Model equation:
 
 $$
-\text{logit}(P(\text{outcome}=1)) = `r sprintf("%.4f", alpha)` + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}
+\text{logit}(P(\text{outcome}=1)) = `r sprintf("%.4f", alpha)` + 0.45X_1 + 0.4X_2 - 0.35X_3 + 0.3X_4 - 0.25X_5 + 0.2X_6 + 0.15X_7 + 0.1X_8 + 0.08X_9 + 0.05X_{10}
 $$
 
 ## Sample Sizes
 
 -   Development: n=`r n_dev` (`r n_events` events, EPV=`r sprintf("%.1f", epv)`)
     -   Determined using `samplesizedev` package
--   External validation: n=`r format(n_ext, big.mark=",")` (asymptotic truth)
+-   External validation: n=`r format(n_ext, big.mark = ",", scientific = FALSE)`
 -   Simulations: `r n_simulations` iterations
 
 ## Methods Compared
@@ -168,13 +188,13 @@ For each simulation:
 
 1.  Apparent validation - Optimistic test on development data (baseline)
 2.  Sample Split - 70/30 split
-3.  10-fold Cross-validation - Stratified folds with pooled predictions
+3.  10-fold Cross-validation - 10 folds with pooled predictions
 4.  Bootstrap - Harrell's optimism correction (200 resamples)
 5.  External validation - Independent large dataset (gold standard)
 
 ## Performance Metrics
 
--   Discrimination: AUC (C-statistic)
+-   Discrimination: AUC (C-statistic). The true model has a C-statistic of `r sprintf("%.3f", true_auc)`.
 -   Calibration: Calibration slope (1.0 = perfect; <1.0 = overfitting)
 -   Overall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)
 
@@ -210,7 +230,7 @@ Bootstrap and cross-validation show much lower standard deviations than sample s
 #| label: tbl-bias
 #| tbl-cap: "Bias and RMSE relative to external validation"
 
-bias_rmse %>%
+bias_rmse_with_external %>%
   mutate(
     Method = method,
     `AUC` = sprintf("%.3f (%.3f)", auc_bias, auc_rmse),
@@ -222,7 +242,7 @@ bias_rmse %>%
   kable()
 ```
 
-Bootstrap shows minimal bias across all metrics - Cross-validation slightly underestimates calibration slope (pessimistic) - Sample splitting has low bias on average but very high RMSE due to extreme variability
+Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, bootstrap achieves calibration slope precision (SD: `r sprintf("%.3f", bootstrap_cal_sd)`) that is even better than the external validation baseline (SD: `r sprintf("%.3f", external_cal_sd)`), demonstrating the stability of the optimism correction approach.
 
 ## Visual Comparison
 
