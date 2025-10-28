@@ -39,7 +39,7 @@
     "href": "index.html#data-generating-process",
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.1 Data Generating Process",
-    "text": "3.1 Data Generating Process\nSimulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.9524) calculated to achieve exactly 15% prevalence\nModel equation:\n\\[\n\\text{logit}(P(\\text{outcome}=1)) = -1.9524 + 0.45X_1 + 0.4X_2 - 0.35X_3 + 0.3X_4 - 0.25X_5 + 0.2X_6 + 0.15X_7 + 0.1X_8 + 0.08X_9 + 0.05X_{10}\n\\]"
+    "text": "3.1 Data Generating Process\nSimulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁…X₁₀), all ~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = -1.9524) calculated to achieve exactly 15% prevalence\nModel equation:\n\\[\n\\text{logit}(P(\\text{outcome}=1)) = -1.9524 + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}\n\\]"
   },
   {
     "objectID": "index.html#sample-size-determination",
@@ -81,7 +81,7 @@
     "href": "index.html#visual-comparison",
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "4.3 Visual Comparison",
-    "text": "4.3 Visual Comparison\nThe following plots show the distribution of each metric across 500 simulations:\n\n\n\n\n\n\n\n\nFigure 1: AUC (C-statistic) distributions\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: AUC distribution density plots showing overlap between methods\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3: Calibration slope distributions. Note the extreme variability of sample splitting.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 4: Calibration slope density plots highlighting sample splitting’s extreme variability\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 5: Brier score distributions: lower is better.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 6: Brier score density plots showing performance distributions\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 7: Mean Absolute Prediction Error: lower is better.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 8: MAPE density plots showing prediction error distributions\n\n\n\n\n\nFigure 3 demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small."
+    "text": "4.3 Visual Comparison\nThe following plots show the distribution of each metric across 500 simulations:\n\n\n\n\n\n\n\n\nFigure 1: AUC (C-statistic) distributions\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: AUC distribution density plots showing overlap between methods\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3: Calibration slope distributions. Note the extreme variability of sample splitting.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 4: Calibration slope density plots highlighting sample splitting’s extreme variability\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 5: Brier score distributions: lower is better.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 6: Brier score density plots showing performance distributions\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 7: Mean Absolute Prediction Error\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 8: MAPE density plots showing prediction error distributions\n\n\n\n\n\nFigure 3 demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small."
   },
   {
     "objectID": "index.html#principal-findings",
@@ -151,7 +151,7 @@
     "href": "index.html#methods-compared",
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "3.3 Methods Compared",
-    "text": "3.3 Methods Compared\nFor each simulation:\n\nApparent validation - Optimistic test on development data (baseline)\nSample Split - 70/30 split\n10-fold Cross-validation - 10 folds with pooled predictions\nBootstrap - Harrell’s optimism correction (200 resamples)\nExternal validation - Independent large dataset (gold standard)"
+    "text": "3.3 Methods Compared\nFor each simulation:\n\nApparent validation - Optimistic test on development data\nSample Split - 70/30 split\n10-fold Cross-validation - 10 folds with pooled predictions\nBootstrap - Harrell’s optimism correction (200 resamples)\nExternal validation - Independent large dataset"
   },
   {
     "objectID": "index.html#performance-summary",
@@ -165,7 +165,7 @@
     "href": "index.html#bias-and-precision",
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "4.2 Bias and Precision",
-    "text": "4.2 Bias and Precision\nTable 2 compares internal methods to external validation. Lower bias and RMSE indicate better performance.\n\n\n\n\nTable 2: Bias and RMSE relative to external validation\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC\nCal. Slope\nBrier\nMAPE\n\n\n\n\nBootstrap\n-0.000 (0.026)\n0.002 (0.126)\n0.000 (0.008)\n0.000 (0.008)\n\n\nCross-validation\n-0.008 (0.028)\n-0.064 (0.155)\n0.001 (0.008)\n0.000 (0.008)\n\n\nSample Split\n-0.008 (0.045)\n-0.056 (0.283)\n0.001 (0.014)\n0.001 (0.012)\n\n\nExternal\n0.000 (0.007)\n0.000 (0.109)\n0.000 (0.001)\n0.000 (0.007)\n\n\n\n\n\n\n\n\nBootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, bootstrap achieves calibration slope precision (SD: 0.021) that is even better than the external validation baseline (SD: 0.109), demonstrating the stability of the optimism correction approach."
+    "text": "4.2 Bias and Precision\nTable 2 compares internal methods to external validation. Lower bias and RMSE indicate better performance.\n\n\n\n\nTable 2: Bias and RMSE relative to external validation\n\n\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAUC\nCal. Slope\nBrier\nMAPE\n\n\n\n\nBootstrap\n-0.000 (0.026)\n0.002 (0.126)\n0.000 (0.008)\n0.000 (0.008)\n\n\nCross-validation\n-0.008 (0.028)\n-0.064 (0.155)\n0.001 (0.008)\n0.000 (0.008)\n\n\nSample Split\n-0.008 (0.045)\n-0.056 (0.283)\n0.001 (0.014)\n0.001 (0.012)\n\n\nExternal\n0.000 (0.007)\n0.000 (0.109)\n0.000 (0.001)\n0.000 (0.007)\n\n\n\n\n\n\n\n\nBootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, as shown in Figure 3, bootstrap and cross-validation achieve tighter distributions (lower variability) than even the external validation baseline. Bootstrap calibration slope RMSE (0.126) is comparable to external SD (0.109), demonstrating the stability of the optimism correction approach."
   },
   {
     "objectID": "index.html#main-findings",
@@ -306,5 +306,12 @@
     "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
     "section": "5.6 Code and Data Availability",
     "text": "5.6 Code and Data Availability\nAll simulation code and generated data are available at [https://github.com/AshleyMDickson/internal_validation_paper.git]."
+  },
+  {
+    "objectID": "index.html#comparison-with-smith-et-al.",
+    "href": "index.html#comparison-with-smith-et-al.",
+    "title": "Comparing Internal Validation Methods for Clinical Risk Prediction",
+    "section": "5.2 Comparison with Smith et al.",
+    "text": "5.2 Comparison with Smith et al.\nThese findings align with Smith et al.’s study comparing internal validation methods. Both studies found: - Bootstrap, cross-validation (with replication) methods provide unbiased estimates - Sample splitting shows problematic performance - Bootstrap validation is recommended as the primary approach\nThis study differs from their work by: 1. Higher EPV: We used EPV=12.9 (via principled sample size calculation) vs. their EPV=5 (intentionally low to test challenging scenarios) 2. Multi-metric focus: While Smith et al. emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 3. Calibration emphasis: We highlight that sample splitting’s variability problem is particularly severe for calibration assessment\nThe consistency between studies strengthens the evidence for bootstrap validation in clinical prediction modeling."
   }
 ]

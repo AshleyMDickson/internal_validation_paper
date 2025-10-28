@@ -107,7 +107,8 @@ bias_rmse <- results %>%
     mape_rmse = sqrt(mean((internal_mape - external_mape)^2))
   )
 
-# Add External validation row (bias = 0, RMSE = SD)
+# Add External validation row (bias = 0, "RMSE" = SD for display purposes)
+# Note: For External, we show SD not RMSE since bias=0 by definition
 external_bias_rmse <- data.frame(
   method = "External",
   auc_bias = 0,
@@ -172,7 +173,7 @@ Simulated scenario:
 Model equation:
 
 $$
-\text{logit}(P(\text{outcome}=1)) = `r sprintf("%.4f", alpha)` + 0.45X_1 + 0.4X_2 - 0.35X_3 + 0.3X_4 - 0.25X_5 + 0.2X_6 + 0.15X_7 + 0.1X_8 + 0.08X_9 + 0.05X_{10}
+\text{logit}(P(\text{outcome}=1)) = `r sprintf("%.4f", alpha)` + 0.45X_1 + 0.40X_2 - 0.35X_3 + ... + 0.05X_{10}
 $$
 
 ## Sample Sizes
@@ -180,17 +181,17 @@ $$
 -   Development: n=`r n_dev` (`r n_events` events, EPV=`r sprintf("%.1f", epv)`)
     -   Determined using `samplesizedev` package
 -   External validation: n=`r format(n_ext, big.mark = ",", scientific = FALSE)`
--   Simulations: `r n_simulations` iterations
+-   Simulations: 500 iterations
 
 ## Methods Compared
 
 For each simulation:
 
-1.  Apparent validation - Optimistic test on development data (baseline)
+1.  Apparent validation - Optimistic test on development data
 2.  Sample Split - 70/30 split
 3.  10-fold Cross-validation - 10 folds with pooled predictions
 4.  Bootstrap - Harrell's optimism correction (200 resamples)
-5.  External validation - Independent large dataset (gold standard)
+5.  External validation - Independent large dataset
 
 ## Performance Metrics
 
@@ -242,11 +243,11 @@ bias_rmse_with_external %>%
   kable()
 ```
 
-Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, bootstrap achieves calibration slope precision (SD: `r sprintf("%.3f", bootstrap_cal_sd)`) that is even better than the external validation baseline (SD: `r sprintf("%.3f", external_cal_sd)`), demonstrating the stability of the optimism correction approach.
+Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, as shown in @fig-calibration, bootstrap and cross-validation achieve tighter distributions (lower variability) than even the external validation baseline. Bootstrap calibration slope RMSE (`r sprintf("%.3f", bootstrap_cal_rmse)`) is comparable to external SD (`r sprintf("%.3f", external_cal_sd)`), demonstrating the stability of the optimism correction approach.
 
 ## Visual Comparison
 
-The following plots show the distribution of each metric across `r n_simulations` simulations:
+The following plots show the distribution of each metric across 500 simulations:
 
 ```{r}
 #| label: fig-auc
@@ -304,7 +305,7 @@ knitr::include_graphics("density_brier.png")
 
 ```{r}
 #| label: fig-mape
-#| fig-cap: "Mean Absolute Prediction Error: lower is better."
+#| fig-cap: "Mean Absolute Prediction Error"
 #| fig-width: 10
 #| fig-height: 6
 
@@ -335,7 +336,7 @@ Cross-validation performed well as a computationally simpler alternative, with s
 
 Sample splitting was problematic due to extreme variability (calibration slope SD `r round(split_bootstrap_ratio)`× higher than bootstrap), making individual estimates unreliable despite low average bias across many simulations.
 
-## Comparison with Smith et al. (2014)
+## Comparison with Smith et al.
 
 These findings align with Smith et al.'s study comparing internal validation methods. Both studies found: 
 - Bootstrap, cross-validation (with replication) methods provide unbiased estimates 
