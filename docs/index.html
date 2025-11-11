@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ashley Dickson">
-<meta name="dcterms.date" content="2025-10-28">
+<meta name="dcterms.date" content="2025-11-10">
 
 <title>Comparing Internal Validation Methods for Clinical Risk Prediction – Internal Validation Methods Comparison</title>
 <style>
@@ -160,6 +160,7 @@ window.Quarto = {
   <li><a href="#performance-summary" id="toc-performance-summary" class="nav-link" data-scroll-target="#performance-summary"><span class="header-section-number">4.1</span> Performance Summary</a></li>
   <li><a href="#bias-and-precision" id="toc-bias-and-precision" class="nav-link" data-scroll-target="#bias-and-precision"><span class="header-section-number">4.2</span> Bias and Precision</a></li>
   <li><a href="#visual-comparison" id="toc-visual-comparison" class="nav-link" data-scroll-target="#visual-comparison"><span class="header-section-number">4.3</span> Visual Comparison</a></li>
+  <li><a href="#correlation-with-external-validation" id="toc-correlation-with-external-validation" class="nav-link" data-scroll-target="#correlation-with-external-validation"><span class="header-section-number">4.4</span> Correlation with External Validation</a></li>
   </ul></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">5</span> Discussion</a>
   <ul class="collapse">
@@ -196,7 +197,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 28, 2025</p>
+      <p class="date">November 10, 2025</p>
     </div>
   </div>
   
@@ -524,6 +525,64 @@ Figure&nbsp;8: MAPE density plots showing prediction error distributions
 </div>
 </div>
 <p><a href="#fig-calibration" class="quarto-xref">Figure&nbsp;3</a> demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small.</p>
+</section>
+<section id="correlation-with-external-validation" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="correlation-with-external-validation"><span class="header-section-number">4.4</span> Correlation with External Validation</h2>
+<p>The following plots examine how well each internal validation method predicts external validation performance across all four metrics. The red dashed line represents perfect agreement (internal = external), while correlation coefficients (r) quantify the strength of the relationship.</p>
+<section id="sample-split" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="sample-split"><span class="header-section-number">4.4.1</span> Sample Split</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-corr-split" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-corr-split-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="correlation_sample_split.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corr-split-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Sample splitting: correlation between internal and external validation across all metrics
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Sample splitting shows moderate to strong correlations with external validation, but the wide scatter around the agreement line (especially for calibration slope) reflects the high variability observed in <a href="#fig-calibration" class="quarto-xref">Figure&nbsp;3</a>.</p>
+</section>
+<section id="cross-validation" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="cross-validation"><span class="header-section-number">4.4.2</span> Cross-validation</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-corr-cv" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-corr-cv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="correlation_cross_validation.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corr-cv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Cross-validation: correlation between internal and external validation across all metrics
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Cross-validation demonstrates tighter clustering around the agreement line, particularly for calibration slope, indicating more consistent prediction of external performance.</p>
+</section>
+<section id="bootstrap" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="bootstrap"><span class="header-section-number">4.4.3</span> Bootstrap</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-corr-boot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-corr-boot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="correlation_bootstrap.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corr-boot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Bootstrap: correlation between internal and external validation across all metrics
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Bootstrap validation shows the tightest relationship with external validation across all metrics, with points closely following the agreement line and high correlation coefficients, confirming its reliability as an internal validation method.</p>
+</section>
 </section>
 </section>
 <section id="discussion" class="level1" data-number="5">

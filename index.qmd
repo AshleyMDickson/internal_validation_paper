@@ -307,6 +307,49 @@ knitr::include_graphics("density_mape.png")
 
 @fig-calibration demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small.
 
+## Correlation with External Validation
+
+The following plots examine how well each internal validation method predicts external validation performance across all four metrics. The red dashed line represents perfect agreement (internal = external), while correlation coefficients (r) quantify the strength of the relationship.
+
+### Sample Split
+
+```{r}
+#| label: fig-corr-split
+#| fig-cap: "Sample splitting: correlation between internal and external validation across all metrics"
+#| fig-width: 10
+#| fig-height: 8
+
+knitr::include_graphics("correlation_sample_split.png")
+```
+
+Sample splitting shows moderate to strong correlations with external validation, but the wide scatter around the agreement line (especially for calibration slope) reflects the high variability observed in @fig-calibration.
+
+### Cross-validation
+
+```{r}
+#| label: fig-corr-cv
+#| fig-cap: "Cross-validation: correlation between internal and external validation across all metrics"
+#| fig-width: 10
+#| fig-height: 8
+
+knitr::include_graphics("correlation_cross_validation.png")
+```
+
+Cross-validation demonstrates tighter clustering around the agreement line, particularly for calibration slope, indicating more consistent prediction of external performance.
+
+### Bootstrap
+
+```{r}
+#| label: fig-corr-boot
+#| fig-cap: "Bootstrap: correlation between internal and external validation across all metrics"
+#| fig-width: 10
+#| fig-height: 8
+
+knitr::include_graphics("correlation_bootstrap.png")
+```
+
+Bootstrap validation shows the tightest relationship with external validation across all metrics, with points closely following the agreement line and high correlation coefficients, confirming its reliability as an internal validation method.
+
 # Discussion
 
 ## Main Findings

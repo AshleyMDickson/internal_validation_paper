@@ -470,4 +470,77 @@ p_density_mape <- ggplot(density_data_mape, aes(x = value, fill = method, color 
 
 ggsave("density_mape.png", p_density_mape, width = 10, height = 6, dpi = 300)
 
+# Correlation plots: Internal vs External validation
+# Create data for correlation plots
+correlation_data <- results %>%
+  select(simulation, method,
+         internal_auc, external_auc,
+         internal_cal_slope, external_cal_slope,
+         internal_brier, external_brier,
+         internal_mape, external_mape) %>%
+  pivot_longer(
+    cols = c(internal_auc, internal_cal_slope, internal_brier, internal_mape),
+    names_to = "metric_type",
+    values_to = "internal_value",
+    names_prefix = "internal_"
+  ) %>%
+  mutate(
+    external_value = case_when(
+      metric_type == "auc" ~ external_auc,
+      metric_type == "cal_slope" ~ external_cal_slope,
+      metric_type == "brier" ~ external_brier,
+      metric_type == "mape" ~ external_mape
+    ),
+    metric_label = case_when(
+      metric_type == "auc" ~ "AUC (C-statistic)",
+      metric_type == "cal_slope" ~ "Calibration Slope",
+      metric_type == "brier" ~ "Brier Score",
+      metric_type == "mape" ~ "MAPE"
+    )
+  )
+
+# Calculate correlation coefficients for annotation
+correlations <- correlation_data %>%
+  group_by(method, metric_label) %>%
+  summarise(
+    cor = cor(internal_value, external_value, use = "complete.obs"),
+    .groups = "drop"
+  )
+
+# Create correlation plot for each method
+for (method_name in c("Sample Split", "Cross-validation", "Bootstrap")) {
+
+  plot_data <- correlation_data %>% filter(method == method_name)
+  cor_data <- correlations %>% filter(method == method_name)
+
+  p_corr <- ggplot(plot_data, aes(x = external_value, y = internal_value)) +
+    geom_point(alpha = 0.3, size = 1.5, color = "#2A9D8F") +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red", size = 0.8) +
+    geom_smooth(method = "lm", se = TRUE, color = "#264653", size = 1, alpha = 0.2) +
+    geom_text(data = cor_data,
+              aes(label = sprintf("r = %.3f", cor)),
+              x = -Inf, y = Inf, hjust = -0.1, vjust = 1.5,
+              size = 3.5, fontface = "italic", color = "gray20") +
+    facet_wrap(~ metric_label, scales = "free", ncol = 2) +
+    labs(
+      title = sprintf("Internal vs External Validation: %s", method_name),
+      subtitle = "Dashed red line shows perfect agreement (y = x)",
+      x = "External Validation Performance",
+      y = "Internal Validation Performance"
+    ) +
+    theme_bw() +
+    theme(
+      plot.title = element_text(face = "bold", size = 14),
+      plot.subtitle = element_text(size = 10, color = "gray40"),
+      axis.title = element_text(size = 11, face = "bold"),
+      strip.text = element_text(size = 10, face = "bold"),
+      strip.background = element_rect(fill = "gray90")
+    )
+
+  # Save with method name in filename
+  filename <- sprintf("correlation_%s.png",
+                      tolower(gsub("[- ]", "_", method_name)))
+  ggsave(filename, p_corr, width = 10, height = 8, dpi = 300)
+}
+
 cat("Simulation complete.")
