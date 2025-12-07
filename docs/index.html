@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ashley Dickson">
-<meta name="dcterms.date" content="2025-11-10">
+<meta name="dcterms.date" content="2025-12-07">
 
 <title>Comparing Internal Validation Methods for Clinical Risk Prediction – Internal Validation Methods Comparison</title>
 <style>
@@ -162,14 +162,13 @@ window.Quarto = {
   <li><a href="#visual-comparison" id="toc-visual-comparison" class="nav-link" data-scroll-target="#visual-comparison"><span class="header-section-number">4.3</span> Visual Comparison</a></li>
   <li><a href="#correlation-with-external-validation" id="toc-correlation-with-external-validation" class="nav-link" data-scroll-target="#correlation-with-external-validation"><span class="header-section-number">4.4</span> Correlation with External Validation</a></li>
   </ul></li>
-  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">5</span> Discussion</a>
+  <li><a href="#external-validation-sample-size-requirements" id="toc-external-validation-sample-size-requirements" class="nav-link" data-scroll-target="#external-validation-sample-size-requirements"><span class="header-section-number">5</span> External Validation Sample Size Requirements</a>
   <ul class="collapse">
-  <li><a href="#main-findings" id="toc-main-findings" class="nav-link" data-scroll-target="#main-findings"><span class="header-section-number">5.1</span> Main Findings</a></li>
-  <li><a href="#comparison-with-smith-et-al.-2014" id="toc-comparison-with-smith-et-al.-2014" class="nav-link" data-scroll-target="#comparison-with-smith-et-al.-2014"><span class="header-section-number">5.2</span> Comparison with Smith et al.&nbsp;(2014)</a></li>
-  <li><a href="#practical-recommendations" id="toc-practical-recommendations" class="nav-link" data-scroll-target="#practical-recommendations"><span class="header-section-number">5.3</span> Practical Recommendations</a></li>
-  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">5.4</span> Limitations</a></li>
-  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions"><span class="header-section-number">5.5</span> Conclusions</a></li>
-  <li><a href="#code-and-data-availability" id="toc-code-and-data-availability" class="nav-link" data-scroll-target="#code-and-data-availability"><span class="header-section-number">5.6</span> Code and Data Availability</a></li>
+  <li><a href="#methods-1" id="toc-methods-1" class="nav-link" data-scroll-target="#methods-1"><span class="header-section-number">5.1</span> Methods</a></li>
+  <li><a href="#performance-variability-by-validation-sample-size" id="toc-performance-variability-by-validation-sample-size" class="nav-link" data-scroll-target="#performance-variability-by-validation-sample-size"><span class="header-section-number">5.2</span> Performance Variability by Validation Sample Size</a></li>
+  <li><a href="#correlation-with-asymptotic-truth" id="toc-correlation-with-asymptotic-truth" class="nav-link" data-scroll-target="#correlation-with-asymptotic-truth"><span class="header-section-number">5.3</span> Correlation with Asymptotic Truth</a></li>
+  <li><a href="#practical-implications" id="toc-practical-implications" class="nav-link" data-scroll-target="#practical-implications"><span class="header-section-number">5.4</span> Practical Implications</a></li>
+  <li><a href="#code-and-data-availability" id="toc-code-and-data-availability" class="nav-link" data-scroll-target="#code-and-data-availability"><span class="header-section-number">5.5</span> Code and Data Availability</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -197,7 +196,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 10, 2025</p>
+      <p class="date">December 7, 2025</p>
     </div>
   </div>
   
@@ -211,28 +210,11 @@ window.Quarto = {
 
 <section id="overview" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Overview</h1>
-<p>This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models. It uses 500 simulations with realistic sample sizes (n=858) and evaluates performance across several metrics.</p>
-<div class="callout callout-style-simple callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Key Findings
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Bootstrap validation performs best overall, with minimal bias and exceptional stability, especially for calibration assessment.</p>
-<p>Sample splitting is unreliable - it shows extreme variability in calibration slope estimates (SD 12 times higher than bootstrap), making it unsuitable for calibration assessment.</p>
-<p>Cross-validation is acceptable as an alternative to bootstrap, providing reasonably stable estimates with slight pessimistic bias.</p>
-<p>Main recommendation: Use bootstrap validation (200+ samples) for internal validation. Cross-validation is acceptable if bootstrap is too computationally intensive. Avoid sample splitting.</p>
-</div>
-</div>
+<p>This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models using 500 simulations with realistic sample sizes (n=858).</p>
 </section>
 <section id="background" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Background</h1>
-<p>Clinical prediction models often perform worse in new patients than in development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. However, multiple methods exist with limited guidance on which performs best.</p>
-<p>Study aim: Compare sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation (gold standard) across discrimination, calibration, and overall accuracy metrics.</p>
+<p>Clinical prediction models often perform worse in new patients than in development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. This study compares sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation across discrimination, calibration, and overall accuracy metrics.</p>
 </section>
 <section id="methods" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
@@ -348,11 +330,9 @@ Table&nbsp;1: Mean (SD) of performance metrics across <code>r n_simulations</cod
 </figure>
 </div>
 </div>
-<p>Bootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: 0.021 vs.&nbsp;Sample Split SD: 0.243).</p>
 </section>
 <section id="bias-and-precision" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="bias-and-precision"><span class="header-section-number">4.2</span> Bias and Precision</h2>
-<p><a href="#tbl-bias" class="quarto-xref">Table&nbsp;2</a> compares internal methods to external validation. Lower bias and RMSE indicate better performance.</p>
 <div class="cell">
 <div id="tbl-bias" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -407,11 +387,9 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 </figure>
 </div>
 </div>
-<p>Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, as shown in <a href="#fig-calibration" class="quarto-xref">Figure&nbsp;3</a>, bootstrap and cross-validation achieve tighter distributions (lower variability) than even the external validation baseline - likely due to the variance reduction from averaging across multiple resamples. Bootstrap calibration slope SD (0.021) is lower than external SD (0.108), demonstrating the stability of the optimism correction approach.</p>
 </section>
 <section id="visual-comparison" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="visual-comparison"><span class="header-section-number">4.3</span> Visual Comparison</h2>
-<p>The following plots show the distribution of each metric across 500 simulations:</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-auc" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -420,7 +398,7 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 <img src="comparison_auc.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: AUC (C-statistic) distributions
+Figure&nbsp;1: AUC
 </figcaption>
 </figure>
 </div>
@@ -434,7 +412,7 @@ Figure&nbsp;1: AUC (C-statistic) distributions
 <img src="density_auc.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-auc-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: AUC distribution density plots showing overlap between methods
+Figure&nbsp;2: AUC density
 </figcaption>
 </figure>
 </div>
@@ -448,7 +426,7 @@ Figure&nbsp;2: AUC distribution density plots showing overlap between methods
 <img src="comparison_calibration.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Calibration slope distributions. Note the extreme variability of sample splitting.
+Figure&nbsp;3: Calibration slope
 </figcaption>
 </figure>
 </div>
@@ -462,7 +440,7 @@ Figure&nbsp;3: Calibration slope distributions. Note the extreme variability of 
 <img src="density_calibration.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibration-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Calibration slope density plots highlighting sample splitting’s extreme variability
+Figure&nbsp;4: Calibration slope density
 </figcaption>
 </figure>
 </div>
@@ -476,7 +454,7 @@ Figure&nbsp;4: Calibration slope density plots highlighting sample splitting’s
 <img src="comparison_brier.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-brier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Brier score distributions: lower is better.
+Figure&nbsp;5: Brier score
 </figcaption>
 </figure>
 </div>
@@ -490,7 +468,7 @@ Figure&nbsp;5: Brier score distributions: lower is better.
 <img src="density_brier.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-brier-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Brier score density plots showing performance distributions
+Figure&nbsp;6: Brier score density
 </figcaption>
 </figure>
 </div>
@@ -504,7 +482,7 @@ Figure&nbsp;6: Brier score density plots showing performance distributions
 <img src="comparison_mape.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7: Mean Absolute Prediction Error: lower is better.
+Figure&nbsp;7: MAPE
 </figcaption>
 </figure>
 </div>
@@ -518,17 +496,15 @@ Figure&nbsp;7: Mean Absolute Prediction Error: lower is better.
 <img src="density_mape.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mape-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8: MAPE density plots showing prediction error distributions
+Figure&nbsp;8: MAPE density
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p><a href="#fig-calibration" class="quarto-xref">Figure&nbsp;3</a> demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small.</p>
 </section>
 <section id="correlation-with-external-validation" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="correlation-with-external-validation"><span class="header-section-number">4.4</span> Correlation with External Validation</h2>
-<p>The following plots examine how well each internal validation method predicts external validation performance across all four metrics. The red dashed line represents perfect agreement (internal = external), while correlation coefficients (r) quantify the strength of the relationship.</p>
 <section id="sample-split" class="level3" data-number="4.4.1">
 <h3 data-number="4.4.1" class="anchored" data-anchor-id="sample-split"><span class="header-section-number">4.4.1</span> Sample Split</h3>
 <div class="cell">
@@ -539,13 +515,12 @@ Figure&nbsp;8: MAPE density plots showing prediction error distributions
 <img src="correlation_sample_split.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corr-split-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9: Sample splitting: correlation between internal and external validation across all metrics
+Figure&nbsp;9: Sample splitting
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Sample splitting shows moderate to strong correlations with external validation, but the wide scatter around the agreement line (especially for calibration slope) reflects the high variability observed in <a href="#fig-calibration" class="quarto-xref">Figure&nbsp;3</a>.</p>
 </section>
 <section id="cross-validation" class="level3" data-number="4.4.2">
 <h3 data-number="4.4.2" class="anchored" data-anchor-id="cross-validation"><span class="header-section-number">4.4.2</span> Cross-validation</h3>
@@ -557,13 +532,12 @@ Figure&nbsp;9: Sample splitting: correlation between internal and external valid
 <img src="correlation_cross_validation.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corr-cv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10: Cross-validation: correlation between internal and external validation across all metrics
+Figure&nbsp;10: Cross-validation
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Cross-validation demonstrates tighter clustering around the agreement line, particularly for calibration slope, indicating more consistent prediction of external performance.</p>
 </section>
 <section id="bootstrap" class="level3" data-number="4.4.3">
 <h3 data-number="4.4.3" class="anchored" data-anchor-id="bootstrap"><span class="header-section-number">4.4.3</span> Bootstrap</h3>
@@ -575,55 +549,159 @@ Figure&nbsp;10: Cross-validation: correlation between internal and external vali
 <img src="correlation_bootstrap.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corr-boot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11: Bootstrap: correlation between internal and external validation across all metrics
+Figure&nbsp;11: Bootstrap
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Bootstrap validation shows the tightest relationship with external validation across all metrics, with points closely following the agreement line and high correlation coefficients, confirming its reliability as an internal validation method.</p>
 </section>
 </section>
 </section>
-<section id="discussion" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Discussion</h1>
-<section id="main-findings" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="main-findings"><span class="header-section-number">5.1</span> Main Findings</h2>
-<p>Bootstrap validation consistently outperformed other methods: - Minimal bias across all metrics (AUC bias: 0.000, calibration slope bias: 0.003) - Most stable estimates (especially calibration slope SD: 0.021) - Lowest RMSE for calibration slope (0.126)</p>
-<p>Cross-validation performed well as a computationally simpler alternative, with slight pessimistic bias for calibration but acceptable variability.</p>
-<p>Sample splitting was problematic due to extreme variability (calibration slope SD 12× higher than bootstrap), making individual estimates unreliable despite low average bias across many simulations.</p>
-</section>
-<section id="comparison-with-smith-et-al.-2014" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="comparison-with-smith-et-al.-2014"><span class="header-section-number">5.2</span> Comparison with Smith et al.&nbsp;(2014)</h2>
-<p>These findings align with Smith et al.’s study comparing internal validation methods. Both studies found: - Bootstrap, cross-validation (with replication) methods provide unbiased estimates - Sample splitting shows problematic performance - Bootstrap validation is recommended as the primary approach</p>
-<p>This study differs from their work by: 1. Higher EPV: We used EPV=12.9 (via principled sample size calculation) vs.&nbsp;their EPV=5 (intentionally low to test challenging scenarios) 2. Multi-metric focus: While Smith et al.&nbsp;emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 3. Calibration emphasis: We highlight that sample splitting’s variability problem is particularly severe for calibration assessment</p>
-<p>The consistency between studies strengthens the evidence for bootstrap validation in clinical prediction modeling.</p>
-</section>
-<section id="practical-recommendations" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="practical-recommendations"><span class="header-section-number">5.3</span> Practical Recommendations</h2>
-<p>For researchers developing prediction models:</p>
+<section id="external-validation-sample-size-requirements" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> External Validation Sample Size Requirements</h1>
+<p>While internal validation methods help estimate model performance on the development data, external validation on independent datasets provides the ultimate test of model generalizability. However, a key practical question remains: How large should an external validation dataset be?</p>
+<p>This section examines the relationship between external validation sample size and performance estimate stability, using models trained on the Pavlou-recommended sample size (n=858).</p>
+<section id="methods-1" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="methods-1"><span class="header-section-number">5.1</span> Methods</h2>
+<p>For each of 1000 simulations:</p>
 <ol type="1">
-<li>Primary recommendation: Use bootstrap optimism correction (≥200 samples) via established implementations (e.g., <code>rms</code> package)</li>
-<li>Alternative: 10-fold cross-validation with pooled predictions is acceptable if bootstrap is computationally prohibitive</li>
-<li>Avoid: Sample splitting for calibration assessment due to extreme variability</li>
-</ol>
-</section>
-<section id="limitations" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="limitations"><span class="header-section-number">5.4</span> Limitations</h2>
+<li>Generate training data (n=858, following Pavlou’s sample size recommendation)</li>
+<li>Fit a logistic regression model on the training data</li>
+<li>Validate the model on external datasets of varying sizes:
 <ul>
-<li>Single scenario (10 predictors, 15% prevalence, moderate discrimination)</li>
-<li>Logistic regression only (non-linear models may behave differently)</li>
-<li>Independent predictors (correlation might affect performance)</li>
-<li>Moderate sample size (n≈1,000); very small/large samples may show different patterns</li>
-</ul>
+<li>n = 858, 1716, 3432, 6864, 13728, 27456, 54912, 1e+05</li>
+</ul></li>
+<li>Calculate performance metrics (AUC, calibration slope, Brier score, MAPE) for each validation size</li>
+</ol>
+<p>This design isolates the effect of validation sample size on performance estimate variability and correlation with the asymptotic “truth” (n=100,000).</p>
 </section>
-<section id="conclusions" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="conclusions"><span class="header-section-number">5.5</span> Conclusions</h2>
-<p>For clinical prediction models with moderate sample sizes, bootstrap validation provides the most reliable estimates of external performance. Cross-validation is an acceptable alternative. Sample splitting should be avoided, especially for calibration assessment, due to extreme variability that makes individual estimates unreliable.</p>
+<section id="performance-variability-by-validation-sample-size" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="performance-variability-by-validation-sample-size"><span class="header-section-number">5.2</span> Performance Variability by Validation Sample Size</h2>
+<p><a href="#fig-ext-val-auc" class="quarto-xref">Figure&nbsp;12</a> through <a href="#fig-ext-val-mape" class="quarto-xref">Figure&nbsp;15</a> show how performance estimate variability decreases as validation sample size increases.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ext-val-auc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ext-val-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="external_val_size_auc.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ext-val-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: AUC
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ext-val-calibration" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ext-val-calibration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="external_val_size_calibration.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ext-val-calibration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13: Calibration slope
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ext-val-brier" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ext-val-brier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="external_val_size_brier.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ext-val-brier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14: Brier score
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ext-val-mape" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ext-val-mape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="external_val_size_mape.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ext-val-mape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15: MAPE
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="correlation-with-asymptotic-truth" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="correlation-with-asymptotic-truth"><span class="header-section-number">5.3</span> Correlation with Asymptotic Truth</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ext-scatter-auc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ext-scatter-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="external_val_size_scatter_auc.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ext-scatter-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16: AUC
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ext-scatter-cal" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ext-scatter-cal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="external_val_size_scatter_cal_slope.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ext-scatter-cal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17: Calibration slope
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ext-scatter-brier" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ext-scatter-brier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="external_val_size_scatter_brier.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ext-scatter-brier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18: Brier score
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ext-scatter-mape" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ext-scatter-mape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="external_val_size_scatter_mape.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ext-scatter-mape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19: MAPE
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="practical-implications" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="practical-implications"><span class="header-section-number">5.4</span> Practical Implications</h2>
+<p>External validation datasets should ideally be at least 2-4 times the training sample size to provide reasonably stable estimates. Calibration slope estimates require larger validation samples than discrimination metrics. The incremental gain in precision diminishes substantially beyond ~10-20× the training size.</p>
 <hr>
 </section>
-<section id="code-and-data-availability" class="level2" data-number="5.6">
-<h2 data-number="5.6" class="anchored" data-anchor-id="code-and-data-availability"><span class="header-section-number">5.6</span> Code and Data Availability</h2>
+<section id="code-and-data-availability" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="code-and-data-availability"><span class="header-section-number">5.5</span> Code and Data Availability</h2>
 <p>All simulation code and generated data are available at [https://github.com/AshleyMDickson/internal_validation_paper.git].</p>
 
 

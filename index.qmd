@@ -124,25 +124,11 @@ true_auc <- external_stats$auc_mean
 
 # Overview
 
-This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models. It uses `r n_simulations` simulations with realistic sample sizes (n=`r n_dev`) and evaluates performance across several metrics.
-
-::: {.callout-note appearance="simple"}
-## Key Findings
-
-Bootstrap validation performs best overall, with minimal bias and exceptional stability, especially for calibration assessment.
-
-Sample splitting is unreliable - it shows extreme variability in calibration slope estimates (SD `r round(split_bootstrap_ratio)` times higher than bootstrap), making it unsuitable for calibration assessment.
-
-Cross-validation is acceptable as an alternative to bootstrap, providing reasonably stable estimates with slight pessimistic bias.
-
-Main recommendation: Use bootstrap validation (200+ samples) for internal validation. Cross-validation is acceptable if bootstrap is too computationally intensive. Avoid sample splitting.
-:::
+This simulation study compares three internal validation methods (sample splitting, cross-validation, and bootstrap) for clinical prediction models using `r n_simulations` simulations with realistic sample sizes (n=`r n_dev`).
 
 # Background
 
-Clinical prediction models often perform worse in new patients than in development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. However, multiple methods exist with limited guidance on which performs best.
-
-Study aim: Compare sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation (gold standard) across discrimination, calibration, and overall accuracy metrics.
+Clinical prediction models often perform worse in new patients than in development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. This study compares sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation across discrimination, calibration, and overall accuracy metrics.
 
 # Methods
 
@@ -205,11 +191,7 @@ all_stats %>%
   kable()
 ```
 
-Bootstrap and cross-validation show much lower standard deviations than sample splitting, particularly for calibration slope (Bootstrap SD: `r sprintf("%.3f", bootstrap_cal_sd)` vs. Sample Split SD: `r sprintf("%.3f", split_cal_sd)`).
-
 ## Bias and Precision
-
-@tbl-bias compares internal methods to external validation. Lower bias and RMSE indicate better performance.
 
 ```{r}
 #| label: tbl-bias
@@ -227,15 +209,11 @@ bias_rmse %>%
   kable()
 ```
 
-Bootstrap shows minimal bias across all metrics. Cross-validation slightly underestimates calibration slope (pessimistic). Sample splitting has low bias on average but very high RMSE due to extreme variability. Notably, as shown in @fig-calibration, bootstrap and cross-validation achieve tighter distributions (lower variability) than even the external validation baseline - likely due to the variance reduction from averaging across multiple resamples. Bootstrap calibration slope SD (`r sprintf("%.3f", bootstrap_cal_sd)`) is lower than external SD (`r sprintf("%.3f", external_cal_sd)`), demonstrating the stability of the optimism correction approach.
-
 ## Visual Comparison
-
-The following plots show the distribution of each metric across `r n_simulations` simulations:
 
 ```{r}
 #| label: fig-auc
-#| fig-cap: "AUC (C-statistic) distributions"
+#| fig-cap: "AUC"
 #| fig-width: 10
 #| fig-height: 6
 
@@ -244,7 +222,7 @@ knitr::include_graphics("comparison_auc.png")
 
 ```{r}
 #| label: fig-auc-density
-#| fig-cap: "AUC distribution density plots showing overlap between methods"
+#| fig-cap: "AUC density"
 #| fig-width: 10
 #| fig-height: 6
 
@@ -253,7 +231,7 @@ knitr::include_graphics("density_auc.png")
 
 ```{r}
 #| label: fig-calibration
-#| fig-cap: "Calibration slope distributions. Note the extreme variability of sample splitting."
+#| fig-cap: "Calibration slope"
 #| fig-width: 10
 #| fig-height: 6
 
@@ -262,7 +240,7 @@ knitr::include_graphics("comparison_calibration.png")
 
 ```{r}
 #| label: fig-calibration-density
-#| fig-cap: "Calibration slope density plots highlighting sample splitting's extreme variability"
+#| fig-cap: "Calibration slope density"
 #| fig-width: 10
 #| fig-height: 6
 
@@ -271,7 +249,7 @@ knitr::include_graphics("density_calibration.png")
 
 ```{r}
 #| label: fig-brier
-#| fig-cap: "Brier score distributions: lower is better."
+#| fig-cap: "Brier score"
 #| fig-width: 10
 #| fig-height: 6
 
@@ -280,7 +258,7 @@ knitr::include_graphics("comparison_brier.png")
 
 ```{r}
 #| label: fig-brier-density
-#| fig-cap: "Brier score density plots showing performance distributions"
+#| fig-cap: "Brier score density"
 #| fig-width: 10
 #| fig-height: 6
 
@@ -289,7 +267,7 @@ knitr::include_graphics("density_brier.png")
 
 ```{r}
 #| label: fig-mape
-#| fig-cap: "Mean Absolute Prediction Error: lower is better."
+#| fig-cap: "MAPE"
 #| fig-width: 10
 #| fig-height: 6
 
@@ -298,103 +276,210 @@ knitr::include_graphics("comparison_mape.png")
 
 ```{r}
 #| label: fig-mape-density
-#| fig-cap: "MAPE density plots showing prediction error distributions"
+#| fig-cap: "MAPE density"
 #| fig-width: 10
 #| fig-height: 6
 
 knitr::include_graphics("density_mape.png")
 ```
 
-@fig-calibration demonstrates why sample splitting is problematic: the wide spread of calibration slope estimates makes it unreliable for calibration assessment, even though the average bias is small.
-
 ## Correlation with External Validation
-
-The following plots examine how well each internal validation method predicts external validation performance across all four metrics. The red dashed line represents perfect agreement (internal = external), while correlation coefficients (r) quantify the strength of the relationship.
 
 ### Sample Split
 
 ```{r}
 #| label: fig-corr-split
-#| fig-cap: "Sample splitting: correlation between internal and external validation across all metrics"
+#| fig-cap: "Sample splitting"
 #| fig-width: 10
 #| fig-height: 8
 
 knitr::include_graphics("correlation_sample_split.png")
 ```
 
-Sample splitting shows moderate to strong correlations with external validation, but the wide scatter around the agreement line (especially for calibration slope) reflects the high variability observed in @fig-calibration.
-
 ### Cross-validation
 
 ```{r}
 #| label: fig-corr-cv
-#| fig-cap: "Cross-validation: correlation between internal and external validation across all metrics"
+#| fig-cap: "Cross-validation"
 #| fig-width: 10
 #| fig-height: 8
 
 knitr::include_graphics("correlation_cross_validation.png")
 ```
 
-Cross-validation demonstrates tighter clustering around the agreement line, particularly for calibration slope, indicating more consistent prediction of external performance.
-
 ### Bootstrap
 
 ```{r}
 #| label: fig-corr-boot
-#| fig-cap: "Bootstrap: correlation between internal and external validation across all metrics"
+#| fig-cap: "Bootstrap"
 #| fig-width: 10
 #| fig-height: 8
 
 knitr::include_graphics("correlation_bootstrap.png")
 ```
 
-Bootstrap validation shows the tightest relationship with external validation across all metrics, with points closely following the agreement line and high correlation coefficients, confirming its reliability as an internal validation method.
+# External Validation Sample Size Requirements
 
-# Discussion
+```{r}
+#| include: false
 
-## Main Findings
+# Load external validation size results
+ext_val_results <- read.csv("external_validation_size_results.csv")
+ext_val_params <- read.csv("external_validation_size_parameters.csv")
 
-Bootstrap validation consistently outperformed other methods: 
-- Minimal bias across all metrics (AUC bias: `r sprintf("%.3f", bootstrap_auc_bias)`, calibration slope bias: `r sprintf("%.3f", bootstrap_cal_bias)`) 
-- Most stable estimates (especially calibration slope SD: `r sprintf("%.3f", bootstrap_cal_sd)`) 
-- Lowest RMSE for calibration slope (`r sprintf("%.3f", bootstrap_cal_rmse)`)
+# Get sample sizes
+val_sizes <- unique(ext_val_results$val_size)
+truth_size <- max(val_sizes)
 
-Cross-validation performed well as a computationally simpler alternative, with slight pessimistic bias for calibration but acceptable variability.
+# Calculate summary statistics by validation size
+ext_summary <- ext_val_results %>%
+  mutate(val_size_label = factor(
+    ifelse(val_size >= 1000,
+           sprintf("%gk", val_size / 1000),
+           as.character(val_size)),
+    levels = c("858", "1.716k", "3.432k", "6.864k", "13.728k", "27.456k", "54.912k", "100k")
+  )) %>%
+  group_by(val_size, val_size_label) %>%
+  summarise(
+    auc_mean = mean(auc),
+    auc_sd = sd(auc),
+    cal_slope_mean = mean(cal_slope),
+    cal_slope_sd = sd(cal_slope),
+    brier_mean = mean(brier),
+    brier_sd = sd(brier),
+    mape_mean = mean(mape),
+    mape_sd = sd(mape),
+    .groups = "drop"
+  )
 
-Sample splitting was problematic due to extreme variability (calibration slope SD `r round(split_bootstrap_ratio)`× higher than bootstrap), making individual estimates unreliable despite low average bias across many simulations.
+# Calculate correlations with truth (largest sample size)
+correlations_with_truth <- ext_val_results %>%
+  select(simulation, val_size, auc, cal_slope, brier, mape) %>%
+  pivot_wider(
+    id_cols = simulation,
+    names_from = val_size,
+    values_from = c(auc, cal_slope, brier, mape),
+    names_prefix = "n_"
+  )
 
-## Comparison with Smith et al. (2014)
+# Correlation values for each metric
+truth_col_auc <- paste0("auc_n_", truth_size)
+truth_col_cal <- paste0("cal_slope_n_", truth_size)
+truth_col_brier <- paste0("brier_n_", truth_size)
+truth_col_mape <- paste0("mape_n_", truth_size)
 
-These findings align with Smith et al.'s study comparing internal validation methods. Both studies found: 
-- Bootstrap, cross-validation (with replication) methods provide unbiased estimates 
-- Sample splitting shows problematic performance 
-- Bootstrap validation is recommended as the primary approach
+cors_auc <- sapply(val_sizes[val_sizes != truth_size], function(s) {
+  cor(correlations_with_truth[[paste0("auc_n_", s)]],
+      correlations_with_truth[[truth_col_auc]])
+})
 
-This study differs from their work by: 
-1. Higher EPV: We used EPV=`r sprintf("%.1f", epv)` (via principled sample size calculation) vs. their EPV=5 (intentionally low to test challenging scenarios) 
-2. Multi-metric focus: While Smith et al. emphasized the C-statistic, we evaluated discrimination, calibration, and overall accuracy simultaneously 
-3. Calibration emphasis: We highlight that sample splitting's variability problem is particularly severe for calibration assessment
+cors_cal <- sapply(val_sizes[val_sizes != truth_size], function(s) {
+  cor(correlations_with_truth[[paste0("cal_slope_n_", s)]],
+      correlations_with_truth[[truth_col_cal]])
+})
 
-The consistency between studies strengthens the evidence for bootstrap validation in clinical prediction modeling.
+# Get specific correlation values for inline text
+cor_858_auc <- cors_auc[1]
+cor_858_cal <- cors_cal[1]
+```
 
-## Practical Recommendations
+While internal validation methods help estimate model performance on the development data, external validation on independent datasets provides the ultimate test of model generalizability. However, a key practical question remains: How large should an external validation dataset be?
 
-For researchers developing prediction models:
+This section examines the relationship between external validation sample size and performance estimate stability, using models trained on the Pavlou-recommended sample size (n=`r n_dev`).
 
-1.  Primary recommendation: Use bootstrap optimism correction (≥200 samples) via established implementations (e.g., `rms` package)
-2.  Alternative: 10-fold cross-validation with pooled predictions is acceptable if bootstrap is computationally prohibitive
-3.  Avoid: Sample splitting for calibration assessment due to extreme variability
+## Methods
 
-## Limitations
+For each of `r ext_val_params$value[ext_val_params$parameter == "n_simulations"]` simulations:
 
--   Single scenario (10 predictors, 15% prevalence, moderate discrimination)
--   Logistic regression only (non-linear models may behave differently)
--   Independent predictors (correlation might affect performance)
--   Moderate sample size (n≈1,000); very small/large samples may show different patterns
+1. Generate training data (n=`r n_dev`, following Pavlou's sample size recommendation)
+2. Fit a logistic regression model on the training data
+3. Validate the model on external datasets of varying sizes:
+   - n = `r paste(val_sizes, collapse = ", ")`
+4. Calculate performance metrics (AUC, calibration slope, Brier score, MAPE) for each validation size
 
-## Conclusions
+This design isolates the effect of validation sample size on performance estimate variability and correlation with the asymptotic "truth" (n=100,000).
 
-For clinical prediction models with moderate sample sizes, bootstrap validation provides the most reliable estimates of external performance. Cross-validation is an acceptable alternative. Sample splitting should be avoided, especially for calibration assessment, due to extreme variability that makes individual estimates unreliable.
+## Performance Variability by Validation Sample Size
+
+@fig-ext-val-auc through @fig-ext-val-mape show how performance estimate variability decreases as validation sample size increases.
+
+```{r}
+#| label: fig-ext-val-auc
+#| fig-cap: "AUC"
+#| fig-width: 10
+#| fig-height: 6
+
+knitr::include_graphics("external_val_size_auc.png")
+```
+
+```{r}
+#| label: fig-ext-val-calibration
+#| fig-cap: "Calibration slope"
+#| fig-width: 10
+#| fig-height: 6
+
+knitr::include_graphics("external_val_size_calibration.png")
+```
+
+```{r}
+#| label: fig-ext-val-brier
+#| fig-cap: "Brier score"
+#| fig-width: 10
+#| fig-height: 6
+
+knitr::include_graphics("external_val_size_brier.png")
+```
+
+```{r}
+#| label: fig-ext-val-mape
+#| fig-cap: "MAPE"
+#| fig-width: 10
+#| fig-height: 6
+
+knitr::include_graphics("external_val_size_mape.png")
+```
+
+## Correlation with Asymptotic Truth
+
+```{r}
+#| label: fig-ext-scatter-auc
+#| fig-cap: "AUC"
+#| fig-width: 12
+#| fig-height: 10
+
+knitr::include_graphics("external_val_size_scatter_auc.png")
+```
+
+```{r}
+#| label: fig-ext-scatter-cal
+#| fig-cap: "Calibration slope"
+#| fig-width: 12
+#| fig-height: 10
+
+knitr::include_graphics("external_val_size_scatter_cal_slope.png")
+```
+
+```{r}
+#| label: fig-ext-scatter-brier
+#| fig-cap: "Brier score"
+#| fig-width: 12
+#| fig-height: 10
+
+knitr::include_graphics("external_val_size_scatter_brier.png")
+```
+
+```{r}
+#| label: fig-ext-scatter-mape
+#| fig-cap: "MAPE"
+#| fig-width: 12
+#| fig-height: 10
+
+knitr::include_graphics("external_val_size_scatter_mape.png")
+```
+
+## Practical Implications
+
+External validation datasets should ideally be at least 2-4 times the training sample size to provide reasonably stable estimates. Calibration slope estimates require larger validation samples than discrimination metrics. The incremental gain in precision diminishes substantially beyond ~10-20× the training size.
 
 ------------------------------------------------------------------------
 

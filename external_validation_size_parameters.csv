@@ -1,0 +1,5 @@
+"parameter","value"
+"n_dev","858"
+"validation_sizes","858, 1716, 3432, 6864, 13728, 27456, 54912, 1e+05"
+"n_simulations","1000"
+"alpha","-1.96986523408841"
