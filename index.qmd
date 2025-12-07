@@ -128,17 +128,13 @@ This simulation study compares three internal validation methods (sample splitti
 
 # Background
 
-Clinical prediction models often perform worse in new patients than in development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. This study compares sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation across discrimination, calibration, and overall accuracy metrics.
+Clinical prediction models often perform poortly in new patients compared to development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. This study compares sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation across discrimination, calibration, and overall accuracy metrics. It then compares external validation data set sizes to asymptotic 'truth'.
 
 # Methods
 
 ## Data Generating Process
 
-Simulated scenario: 
-- Binary outcome with 15% prevalence 
-- 10 continuous predictors (X₁...X₁₀), all ~N(0,1) 
-- Logistic regression with mixed effect sizes 
-- Intercept (α = `r sprintf("%.4f", alpha)`) calculated to achieve exactly 15% prevalence
+Simulated scenario: - Binary outcome with 15% prevalence - 10 continuous predictors (X₁...X₁₀), all \~N(0,1) - Logistic regression with mixed effect sizes - Intercept (α = `r sprintf("%.4f", alpha)`) calculated to achieve exactly 15% prevalence
 
 Model equation:
 
@@ -166,7 +162,7 @@ For each simulation:
 ## Performance Metrics
 
 -   Discrimination: AUC (C-statistic). The true model has a C-statistic of `r sprintf("%.3f", true_auc)`.
--   Calibration: Calibration slope (1.0 = perfect; <1.0 = overfitting)
+-   Calibration: Calibration slope (1.0 = perfect; \<1.0 = overfitting)
 -   Overall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)
 
 # Results
@@ -383,7 +379,7 @@ cor_858_auc <- cors_auc[1]
 cor_858_cal <- cors_cal[1]
 ```
 
-While internal validation methods help estimate model performance on the development data, external validation on independent datasets provides the ultimate test of model generalizability. However, a key practical question remains: How large should an external validation dataset be?
+While internal validation methods help estimate model performance on the development data, external validation on independent data sets provide an honest test of a model's capacity to generalise. However, a key question remains: how large should an external validation data set be?
 
 This section examines the relationship between external validation sample size and performance estimate stability, using models trained on the Pavlou-recommended sample size (n=`r n_dev`).
 
@@ -391,17 +387,17 @@ This section examines the relationship between external validation sample size a
 
 For each of `r ext_val_params$value[ext_val_params$parameter == "n_simulations"]` simulations:
 
-1. Generate training data (n=`r n_dev`, following Pavlou's sample size recommendation)
-2. Fit a logistic regression model on the training data
-3. Validate the model on external datasets of varying sizes:
-   - n = `r paste(val_sizes, collapse = ", ")`
-4. Calculate performance metrics (AUC, calibration slope, Brier score, MAPE) for each validation size
+1.  Generate training data (n=`r n_dev`, following Pavlou's sample size recommendation)
+2.  Fit a logistic regression model on the training data
+3.  Validate the model on external datasets of varying sizes:
+    -   n = `r paste(val_sizes, collapse = ", ")`
+4.  Calculate performance metrics (AUC, calibration slope, Brier score, MAPE) for each validation size
 
-This design isolates the effect of validation sample size on performance estimate variability and correlation with the asymptotic "truth" (n=100,000).
+This design isolates the effect of validation sample size on performance estimate variability and correlation with the asymptotic 'truth' (n=100,000).
 
 ## Performance Variability by Validation Sample Size
 
-@fig-ext-val-auc through @fig-ext-val-mape show how performance estimate variability decreases as validation sample size increases.
+@fig-ext-val-auc to @fig-ext-val-mape show how performance-estimate variability decreases as validation sample size increases.
 
 ```{r}
 #| label: fig-ext-val-auc
@@ -477,12 +473,12 @@ knitr::include_graphics("external_val_size_scatter_brier.png")
 knitr::include_graphics("external_val_size_scatter_mape.png")
 ```
 
-## Practical Implications
+## External Validation Results
 
-External validation datasets should ideally be at least 2-4 times the training sample size to provide reasonably stable estimates. Calibration slope estimates require larger validation samples than discrimination metrics. The incremental gain in precision diminishes substantially beyond ~10-20× the training size.
+Calibration slope and MAPE achieve correlation = 0.9 somewhere between 4x and 6x the training size, while AUC requires 12x to achieve 83.5%. Brier Score never exceeds 0.5 correlation, even at 12x. Calibration, AUC and MAPE yield substantial improvements in variability with increasing validation sizes, while the Brier Score's variability hardly changes. Across the board, the marginal gain in precision diminishes substantially beyond \~10× the training size.
 
 ------------------------------------------------------------------------
 
 ## Code and Data Availability
 
-All simulation code and generated data are available at [https://github.com/AshleyMDickson/internal_validation_paper.git].
+Simulation code and generated data are available at \[https://github.com/AshleyMDickson/internal_validation_paper.git\].
