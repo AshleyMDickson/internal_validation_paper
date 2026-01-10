@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ashley Dickson">
-<meta name="dcterms.date" content="2025-12-07">
+<meta name="dcterms.date" content="2026-01-10">
 
 <title>Comparing Internal Validation Methods for Clinical Risk Prediction – Internal Validation Methods Comparison</title>
 <style>
@@ -167,7 +167,7 @@ window.Quarto = {
   <li><a href="#methods-1" id="toc-methods-1" class="nav-link" data-scroll-target="#methods-1"><span class="header-section-number">5.1</span> Methods</a></li>
   <li><a href="#performance-variability-by-validation-sample-size" id="toc-performance-variability-by-validation-sample-size" class="nav-link" data-scroll-target="#performance-variability-by-validation-sample-size"><span class="header-section-number">5.2</span> Performance Variability by Validation Sample Size</a></li>
   <li><a href="#correlation-with-asymptotic-truth" id="toc-correlation-with-asymptotic-truth" class="nav-link" data-scroll-target="#correlation-with-asymptotic-truth"><span class="header-section-number">5.3</span> Correlation with Asymptotic Truth</a></li>
-  <li><a href="#practical-implications" id="toc-practical-implications" class="nav-link" data-scroll-target="#practical-implications"><span class="header-section-number">5.4</span> Practical Implications</a></li>
+  <li><a href="#external-validation-results" id="toc-external-validation-results" class="nav-link" data-scroll-target="#external-validation-results"><span class="header-section-number">5.4</span> External Validation Results</a></li>
   <li><a href="#code-and-data-availability" id="toc-code-and-data-availability" class="nav-link" data-scroll-target="#code-and-data-availability"><span class="header-section-number">5.5</span> Code and Data Availability</a></li>
   </ul></li>
   </ul>
@@ -196,7 +196,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 7, 2025</p>
+      <p class="date">January 10, 2026</p>
     </div>
   </div>
   
@@ -214,7 +214,7 @@ window.Quarto = {
 </section>
 <section id="background" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Background</h1>
-<p>Clinical prediction models often perform worse in new patients than in development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. This study compares sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation across discrimination, calibration, and overall accuracy metrics.</p>
+<p>Clinical prediction models often perform poortly in new patients compared to development data due to overfitting. Internal validation provides realistic performance estimates without requiring external datasets. This study compares sample splitting, 10-fold cross-validation, and bootstrap optimism correction against external validation across discrimination, calibration, and overall accuracy metrics. It then compares external validation data set sizes to asymptotic ‘truth’.</p>
 </section>
 <section id="methods" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
@@ -255,6 +255,7 @@ window.Quarto = {
 <li>Calibration: Calibration slope (1.0 = perfect; &lt;1.0 = overfitting)</li>
 <li>Overall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)</li>
 </ul>
+<p>External calibration slopes are computed using the same fitted models used for internal validation (bootstrap refits, CV fold models, and sample-split training models). For calibration slope, CV and bootstrap internal estimates are averaged across their fold/refit models to align with the external calculation. The earlier mismatch that compared refit-based internal slopes to a single full-model external slope is not used in this analysis.</p>
 </section>
 </section>
 <section id="results" class="level1" data-number="4">
@@ -298,28 +299,28 @@ Table&nbsp;1: Mean (SD) of performance metrics across <code>r n_simulations</cod
 <tr class="even">
 <td style="text-align: left;">Bootstrap</td>
 <td style="text-align: left;">0.704 (0.026)</td>
-<td style="text-align: left;">0.878 (0.021)</td>
-<td style="text-align: left;">0.119 (0.008)</td>
+<td style="text-align: left;">0.878 (0.022)</td>
+<td style="text-align: left;">0.119 (0.007)</td>
 <td style="text-align: left;">0.234 (0.015)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Cross-validation</td>
 <td style="text-align: left;">0.696 (0.028)</td>
-<td style="text-align: left;">0.812 (0.042)</td>
+<td style="text-align: left;">0.914 (0.062)</td>
 <td style="text-align: left;">0.119 (0.008)</td>
 <td style="text-align: left;">0.234 (0.015)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Sample Split</td>
-<td style="text-align: left;">0.696 (0.046)</td>
-<td style="text-align: left;">0.821 (0.243)</td>
+<td style="text-align: left;">0.699 (0.046)</td>
+<td style="text-align: left;">0.842 (0.258)</td>
 <td style="text-align: left;">0.120 (0.014)</td>
-<td style="text-align: left;">0.234 (0.017)</td>
+<td style="text-align: left;">0.233 (0.018)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">External</td>
 <td style="text-align: left;">0.704 (0.007)</td>
-<td style="text-align: left;">0.875 (0.108)</td>
+<td style="text-align: left;">0.819 (0.096)</td>
 <td style="text-align: left;">0.118 (0.001)</td>
 <td style="text-align: left;">0.233 (0.007)</td>
 </tr>
@@ -345,7 +346,7 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 <colgroup>
 <col style="width: 22%">
 <col style="width: 20%">
-<col style="width: 20%">
+<col style="width: 18%">
 <col style="width: 18%">
 <col style="width: 18%">
 </colgroup>
@@ -362,23 +363,23 @@ Table&nbsp;2: Bias and RMSE relative to external validation
 <tr class="odd">
 <td style="text-align: left;">Bootstrap</td>
 <td style="text-align: left;">0.000 (0.026)</td>
-<td style="text-align: left;">0.003 (0.126)</td>
+<td style="text-align: left;">0.110 (0.144)</td>
 <td style="text-align: left;">0.000 (0.008)</td>
 <td style="text-align: left;">0.000 (0.008)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Cross-validation</td>
-<td style="text-align: left;">-0.008 (0.028)</td>
-<td style="text-align: left;">-0.063 (0.154)</td>
+<td style="text-align: left;">-0.008 (0.029)</td>
+<td style="text-align: left;">0.053 (0.152)</td>
 <td style="text-align: left;">0.001 (0.008)</td>
-<td style="text-align: left;">0.000 (0.008)</td>
+<td style="text-align: left;">0.001 (0.008)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Sample Split</td>
-<td style="text-align: left;">-0.008 (0.046)</td>
-<td style="text-align: left;">-0.053 (0.287)</td>
+<td style="text-align: left;">-0.005 (0.046)</td>
+<td style="text-align: left;">0.015 (0.222)</td>
 <td style="text-align: left;">0.001 (0.014)</td>
-<td style="text-align: left;">0.001 (0.012)</td>
+<td style="text-align: left;">0.000 (0.012)</td>
 </tr>
 </tbody>
 </table>
@@ -505,6 +506,7 @@ Figure&nbsp;8: MAPE density
 </section>
 <section id="correlation-with-external-validation" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="correlation-with-external-validation"><span class="header-section-number">4.4</span> Correlation with External Validation</h2>
+<p>These correlations use the matched external calibration slope from each method’s fitted models. The previous mismatch compared refit-based internal slopes to the final-model external slope; here we align internal and external estimates by construction.</p>
 <section id="sample-split" class="level3" data-number="4.4.1">
 <h3 data-number="4.4.1" class="anchored" data-anchor-id="sample-split"><span class="header-section-number">4.4.1</span> Sample Split</h3>
 <div class="cell">
@@ -560,7 +562,7 @@ Figure&nbsp;11: Bootstrap
 </section>
 <section id="external-validation-sample-size-requirements" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> External Validation Sample Size Requirements</h1>
-<p>While internal validation methods help estimate model performance on the development data, external validation on independent datasets provides the ultimate test of model generalizability. However, a key practical question remains: How large should an external validation dataset be?</p>
+<p>While internal validation methods help estimate model performance on the development data, external validation on independent data sets provide an honest test of a model’s capacity to generalise. However, a key question remains: how large should an external validation data set be?</p>
 <p>This section examines the relationship between external validation sample size and performance estimate stability, using models trained on the Pavlou-recommended sample size (n=858).</p>
 <section id="methods-1" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="methods-1"><span class="header-section-number">5.1</span> Methods</h2>
@@ -574,11 +576,11 @@ Figure&nbsp;11: Bootstrap
 </ul></li>
 <li>Calculate performance metrics (AUC, calibration slope, Brier score, MAPE) for each validation size</li>
 </ol>
-<p>This design isolates the effect of validation sample size on performance estimate variability and correlation with the asymptotic “truth” (n=100,000).</p>
+<p>This design isolates the effect of validation sample size on performance estimate variability and correlation with the asymptotic ‘truth’ (n=100,000).</p>
 </section>
 <section id="performance-variability-by-validation-sample-size" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="performance-variability-by-validation-sample-size"><span class="header-section-number">5.2</span> Performance Variability by Validation Sample Size</h2>
-<p><a href="#fig-ext-val-auc" class="quarto-xref">Figure&nbsp;12</a> through <a href="#fig-ext-val-mape" class="quarto-xref">Figure&nbsp;15</a> show how performance estimate variability decreases as validation sample size increases.</p>
+<p><a href="#fig-ext-val-auc" class="quarto-xref">Figure&nbsp;12</a> to <a href="#fig-ext-val-mape" class="quarto-xref">Figure&nbsp;15</a> show how performance-estimate variability decreases as validation sample size increases.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-ext-val-auc" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -695,14 +697,14 @@ Figure&nbsp;19: MAPE
 </div>
 </div>
 </section>
-<section id="practical-implications" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="practical-implications"><span class="header-section-number">5.4</span> Practical Implications</h2>
-<p>External validation datasets should ideally be at least 2-4 times the training sample size to provide reasonably stable estimates. Calibration slope estimates require larger validation samples than discrimination metrics. The incremental gain in precision diminishes substantially beyond ~10-20× the training size.</p>
+<section id="external-validation-results" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="external-validation-results"><span class="header-section-number">5.4</span> External Validation Results</h2>
+<p>Calibration slope and MAPE achieve correlation = 0.9 somewhere between 4x and 6x the training size, while AUC requires 12x to achieve 83.5%. Brier Score never exceeds 0.5 correlation, even at 12x. Calibration, AUC and MAPE yield substantial improvements in variability with increasing validation sizes, while the Brier Score’s variability hardly changes. Across the board, the marginal gain in precision diminishes substantially beyond ~10× the training size.</p>
 <hr>
 </section>
 <section id="code-and-data-availability" class="level2" data-number="5.5">
 <h2 data-number="5.5" class="anchored" data-anchor-id="code-and-data-availability"><span class="header-section-number">5.5</span> Code and Data Availability</h2>
-<p>All simulation code and generated data are available at [https://github.com/AshleyMDickson/internal_validation_paper.git].</p>
+<p>Simulation code and generated data are available at [https://github.com/AshleyMDickson/internal_validation_paper.git].</p>
 
 
 </section>

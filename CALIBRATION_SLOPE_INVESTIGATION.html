@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-01-10">
 
-<title>Mermaid_Cal_Slope_Issue – Internal Validation Methods Comparison</title>
+<title>calibration_slope_investigation – Internal Validation Methods Comparison</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -69,9 +103,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -114,97 +145,143 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#calibration-slope-investigation" id="toc-calibration-slope-investigation" class="nav-link active" data-scroll-target="#calibration-slope-investigation"><span class="header-section-number">1</span> Calibration Slope Investigation</a>
+  <ul class="collapse">
+  <li><a href="#problem-discovery" id="toc-problem-discovery" class="nav-link" data-scroll-target="#problem-discovery"><span class="header-section-number">1.1</span> Problem Discovery</a></li>
+  <li><a href="#initial-hypothesis-incorrect" id="toc-initial-hypothesis-incorrect" class="nav-link" data-scroll-target="#initial-hypothesis-incorrect"><span class="header-section-number">1.2</span> Initial Hypothesis (INCORRECT)</a></li>
+  <li><a href="#observed-pattern" id="toc-observed-pattern" class="nav-link" data-scroll-target="#observed-pattern"><span class="header-section-number">1.3</span> Observed Pattern</a>
+  <ul class="collapse">
+  <li><a href="#bootstrap-examples-from-main-simulation" id="toc-bootstrap-examples-from-main-simulation" class="nav-link" data-scroll-target="#bootstrap-examples-from-main-simulation"><span class="header-section-number">1.3.1</span> Bootstrap Examples (from main simulation):</a></li>
+  </ul></li>
+  <li><a href="#diagnostic-simulations" id="toc-diagnostic-simulations" class="nav-link" data-scroll-target="#diagnostic-simulations"><span class="header-section-number">1.4</span> Diagnostic Simulations</a>
+  <ul class="collapse">
+  <li><a href="#critical-test-test_hypothesis.r" id="toc-critical-test-test_hypothesis.r" class="nav-link" data-scroll-target="#critical-test-test_hypothesis.r"><span class="header-section-number">1.4.1</span> Critical Test (<code>test_hypothesis.R</code>)</a></li>
+  </ul></li>
+  <li><a href="#current-theory" id="toc-current-theory" class="nav-link" data-scroll-target="#current-theory"><span class="header-section-number">1.5</span> Current Theory</a>
+  <ul class="collapse">
+  <li><a href="#why-calibration-slope-behaves-differently" id="toc-why-calibration-slope-behaves-differently" class="nav-link" data-scroll-target="#why-calibration-slope-behaves-differently"><span class="header-section-number">1.5.1</span> Why Calibration Slope Behaves Differently</a></li>
+  <li><a href="#the-proposed-mechanism" id="toc-the-proposed-mechanism" class="nav-link" data-scroll-target="#the-proposed-mechanism"><span class="header-section-number">1.5.2</span> The Proposed Mechanism</a></li>
+  <li><a href="#why-bootstrap-shows-the-strongest-correlation" id="toc-why-bootstrap-shows-the-strongest-correlation" class="nav-link" data-scroll-target="#why-bootstrap-shows-the-strongest-correlation"><span class="header-section-number">1.5.3</span> Why Bootstrap Shows the Strongest Correlation</a></li>
+  </ul></li>
+  <li><a href="#implications" id="toc-implications" class="nav-link" data-scroll-target="#implications"><span class="header-section-number">1.6</span> Implications</a></li>
+  <li><a href="#questions-remaining" id="toc-questions-remaining" class="nav-link" data-scroll-target="#questions-remaining"><span class="header-section-number">1.7</span> Questions Remaining</a></li>
+  <li><a href="#files-created" id="toc-files-created" class="nav-link" data-scroll-target="#files-created"><span class="header-section-number">1.8</span> Files Created</a></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps"><span class="header-section-number">1.9</span> Next Steps</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Mermaid_Cal_Slope_Issue</h1>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
-<div class="quarto-title-meta">
 
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">January 10, 2026</p>
-    </div>
-  </div>
-  
-    
-  </div>
-  
+<section id="calibration-slope-investigation" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Calibration Slope Investigation</h1>
+<section id="problem-discovery" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="problem-discovery"><span class="header-section-number">1.1</span> Problem Discovery</h2>
+<p>During analysis of the internal validation simulation results, we discovered a <strong>negative correlation</strong> between internal validation calibration slope estimates and external validation calibration slope estimates. This was unexpected and concerning because:</p>
+<ol type="1">
+<li>Other metrics (AUC, MAPE) showed positive correlations as expected</li>
+<li>The negative correlation was strongest for bootstrap (-0.806), followed by CV (-0.713), and weakest for sample splitting (-0.169)</li>
+<li>A negative correlation implies that higher internal calibration slope predicts lower external performance, which seems fundamentally wrong</li>
+</ol>
+</section>
+<section id="initial-hypothesis-incorrect" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="initial-hypothesis-incorrect"><span class="header-section-number">1.2</span> Initial Hypothesis (INCORRECT)</h2>
+<p>Initially suspected the problem was comparing models trained on different sample sizes: - External validation: model trained on 100% of dev_data (n=858) - Sample split: model trained on 70% of dev_data (~600 obs) - Cross-validation: models trained on 90% of dev_data (~772 obs)</p>
+<p>However, this hypothesis was <strong>rejected</strong> because: - Bootstrap also uses 100% of data but showed the STRONGEST negative correlation - If sample size was the issue, bootstrap should have shown the best (most positive) correlation</p>
+</section>
+<section id="observed-pattern" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="observed-pattern"><span class="header-section-number">1.3</span> Observed Pattern</h2>
+<p>Across all methods, when internal calibration slope is high, external calibration slope tends to be low, and vice versa:</p>
+<section id="bootstrap-examples-from-main-simulation" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="bootstrap-examples-from-main-simulation"><span class="header-section-number">1.3.1</span> Bootstrap Examples (from main simulation):</h3>
+<p><strong>High internal cal slope:</strong> - Internal: 0.92-0.93 → External: 0.64-0.76</p>
+<p><strong>Low internal cal slope:</strong> - Internal: 0.80-0.82 → External: 1.01-1.35</p>
+<p>Note: External calibration slopes &gt;1.0 indicate the model appears <em>underfit</em> on that external sample.</p>
+</section>
+</section>
+<section id="diagnostic-simulations" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="diagnostic-simulations"><span class="header-section-number">1.4</span> Diagnostic Simulations</h2>
+<p>Created minimal reproduction (<code>debug_calibration_slope.R</code>): - 100 simulations with n_dev=858, n_ext=100,000 - Clean implementation of CV - <strong>Result: Reproduced the negative correlation (r = -0.675)</strong></p>
+<section id="critical-test-test_hypothesis.r" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="critical-test-test_hypothesis.r"><span class="header-section-number">1.4.1</span> Critical Test (<code>test_hypothesis.R</code>)</h3>
+<p>Tested whether the issue is about different models vs.&nbsp;different data:</p>
+<p><strong>Key Findings:</strong> 1. <strong>Same model, dev vs ext data: r = -0.06</strong> (essentially zero) 2. <strong>CV vs External: r = -0.699</strong> (strongly negative - the problem!) 3. <strong>CV vs Full model on same dev data: r = 0.033</strong> (essentially zero)</p>
+<p><strong>Calibration slope statistics:</strong> - Full model on dev_data: Mean = 1.000, SD = 0.000 (always exactly 1.0) - Full model on ext_data: Mean = 0.900, SD = 0.118 (varies) - CV on dev_data: Mean = 0.804, SD = 0.050 (varies, but less than external)</p>
+<p><strong>Key observation:</strong> The full model evaluated on its own training data (apparent calibration) is always exactly 1.0 with zero variation.</p>
+</section>
+</section>
+<section id="current-theory" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="current-theory"><span class="header-section-number">1.5</span> Current Theory</h2>
+<section id="why-calibration-slope-behaves-differently" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="why-calibration-slope-behaves-differently"><span class="header-section-number">1.5.1</span> Why Calibration Slope Behaves Differently</h3>
+<p>Calibration slope is calculated by <strong>fitting a second logistic regression model</strong> on the evaluation dataset:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>logit_pred <span class="ot">&lt;-</span> <span class="fu">qlogis</span>(predictions)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cal_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(y_true <span class="sc">~</span> logit_pred, <span class="at">family =</span> binomial)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cal_slope <span class="ot">&lt;-</span> <span class="fu">coef</span>(cal_model)[<span class="dv">2</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This is fundamentally different from other metrics: - <strong>AUC</strong>: Ranks predictions vs outcomes (no model fitting) - <strong>Brier Score</strong>: Mean squared error of predictions - <strong>MAPE</strong>: Mean absolute error of predictions</p>
+</section>
+<section id="the-proposed-mechanism" class="level3" data-number="1.5.2">
+<h3 data-number="1.5.2" class="anchored" data-anchor-id="the-proposed-mechanism"><span class="header-section-number">1.5.2</span> The Proposed Mechanism</h3>
+<p>Calibration slope measures <strong>the interaction between predictions and the specific random realization of outcomes</strong> in the evaluation sample.</p>
+<p>When <code>dev_data</code> happens to be an “easy” sample (random outcomes align well with predictors): - Models trained on it (CV folds) generalize well within dev_data - CV shows relatively good calibration (higher slope, e.g., 0.84) - But <code>ext_data</code> is an independent sample - could be a “harder” sample - External calibration appears worse (lower slope, e.g., 0.76)</p>
+<p>When <code>dev_data</code> is a “hard” sample (random outcomes don’t align as well): - CV shows relatively poor calibration (lower slope, e.g., 0.70) - But <code>ext_data</code> could be an “easier” sample - External calibration appears better (higher slope, e.g., 1.04)</p>
+</section>
+<section id="why-bootstrap-shows-the-strongest-correlation" class="level3" data-number="1.5.3">
+<h3 data-number="1.5.3" class="anchored" data-anchor-id="why-bootstrap-shows-the-strongest-correlation"><span class="header-section-number">1.5.3</span> Why Bootstrap Shows the Strongest Correlation</h3>
+<p>Bootstrap has the lowest variance in internal estimates (most precise), so it shows the clearest signal of this underlying pattern. Sample splitting has the highest variance (lots of noise), which dilutes/obscures the correlation.</p>
+<p>This is actually diagnostic: <strong>increasingly strong spurious correlations with increasingly precise methods</strong> suggests a fundamental design issue rather than random noise.</p>
+</section>
+</section>
+<section id="implications" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="implications"><span class="header-section-number">1.6</span> Implications</h2>
+<ol type="1">
+<li><strong>Calibration slope may not be directly comparable</strong> across independent samples from the same DGP when using internal vs external validation</li>
+<li>The metric appears to capture something about the <strong>specific dataset’s characteristics</strong> in addition to model performance</li>
+<li>This could explain why calibration slopes &gt;1.0 appear on external validation (model appears underfit) even though the same model shows slope ~0.80-0.90 on internal validation</li>
+</ol>
+</section>
+<section id="questions-remaining" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="questions-remaining"><span class="header-section-number">1.7</span> Questions Remaining</h2>
+<ol type="1">
+<li>Is this a known property of calibration slope in the literature?</li>
+<li>Is there a different/better way to calculate calibration slope that avoids this issue?</li>
+<li>Should we be using a different calibration metric entirely?</li>
+<li>Does this invalidate our comparison of internal validation methods using calibration slope?</li>
+<li>Is the negative correlation a problem with our simulation design, or a real property of how calibration slope behaves?</li>
+</ol>
+</section>
+<section id="files-created" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="files-created"><span class="header-section-number">1.8</span> Files Created</h2>
+<ul>
+<li><code>debug_calibration_slope.R</code>: Minimal reproduction of the negative correlation</li>
+<li><code>test_hypothesis.R</code>: Tests whether issue is models vs data</li>
+<li><code>debug_calibration_results.csv</code>: Results from minimal simulation</li>
+<li><code>hypothesis_test_results.csv</code>: Results from hypothesis test</li>
+<li><code>debug_calibration_scatter.png</code>: Visualization of negative correlation</li>
+</ul>
+</section>
+<section id="next-steps" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="next-steps"><span class="header-section-number">1.9</span> Next Steps</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Review calibration slope literature to understand if this is expected behavior</label></li>
+<li><label><input type="checkbox">Consider alternative calibration metrics (e.g., calibration intercept, E/O ratio)</label></li>
+<li><label><input type="checkbox">Investigate whether the “correct” implementation should use a different approach</label></li>
+<li><label><input type="checkbox">Decide whether to keep calibration slope in the analysis or remove it</label></li>
+<li><label><input type="checkbox">If keeping it, document this limitation clearly in the paper</label></li>
+</ul>
 
 
-</header>
-
-
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart TB
-  %% =========================
-  %% CURRENT ANALYSIS (yours)
-  %% =========================
-  subgraph A[Current analysis (what you did)]
-    A1[Simulate data:\n• Development dataset (dev)\n• Huge external dataset (ext)] --&gt; A2[Fit FINAL model on full dev]
-    A2 --&gt; A3[Compute EXTERNAL calibration slope:\nEvaluate FINAL model on ext]
-    
-    A2 --&gt; A4[Internal validation step:\nBootstrap / CV / Split on dev\n(creates many refit/fold models)]
-    A4 --&gt; A5[Compute INTERNAL calibration slope:\nFrom refits/fold predictions\n(tied to dev quirks)]
-  end
-
-  %% Correlation
-  A5 &lt;--&gt; A3
-
-  %% =========================
-  %% WHY NEGATIVE?
-  %% =========================
-  subgraph B[Why the correlation can go NEGATIVE]
-    B1["Some dev samples are 'lucky'\n(by chance: stronger apparent signal)"] --&gt; B2[Internal slope looks BETTER\n(dev-based refits look good)]
-    B1 --&gt; B3[Final model overfits more\n(predictions too extreme)]
-    B3 --&gt; B4[External slope looks WORSE\n(calibration slope &lt; 1)]
-    B2 --&gt; B5[Across simulations:\ninternal slope ↑ while external slope ↓]
-    B4 --&gt; B5
-  end
-
-  A5 --&gt; B2
-  A3 --&gt; B4
-
-  %% =========================
-  %% FIX
-  %% =========================
-  subgraph C[Fix: compare like-with-like]
-    C1[Internal validation creates refit/fold models] --&gt; C2[Evaluate those SAME models on ext]
-    C2 --&gt; C3[Average their external slopes\n→ procedure-level external slope]
-    C3 &lt;--&gt; C4[Now correlate:\nINTERNAL vs EXTERNAL\n→ correlation becomes positive]
-  end
-
-  A4 --&gt; C1
-  A1 --&gt; C2
-  A5 --&gt; C4
-  C3 --&gt; C4
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-<p>DiagrammeR::grViz(” digraph { node [shape=box]</p>
-<p>A1 [label=‘Simulate data\n(dev + external)’] A2 [label=‘Fit FINAL model on dev’] A3 [label=‘EXTERNAL calibration slope\n(final model on ext)’] A4 [label=‘Internal validation\n(bootstrap / CV / split)’] A5 [label=‘INTERNAL calibration slope\n(refits tied to dev)’]</p>
-<p>A1 -&gt; A2 A2 -&gt; A3 A2 -&gt; A4 A4 -&gt; A5 A5 -&gt; A3 [dir=both]</p>
-<p>B1 [label=‘Some dev samples are "lucky"’] B2 [label=‘Internal slope looks better’] B3 [label=‘Final model overfits more’] B4 [label=‘External slope looks worse’] B5 [label=‘Negative correlation’]</p>
-<p>B1 -&gt; B2 B1 -&gt; B3 B3 -&gt; B4 B2 -&gt; B5 B4 -&gt; B5 } “)</p>
-
-
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
