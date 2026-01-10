@@ -1,0 +1,47 @@
+
+```mermaid
+flowchart TB
+  %% =========================
+  %% CURRENT ANALYSIS (yours)
+  %% =========================
+  subgraph A[Current analysis (what you did)]
+    A1[Simulate data:\n• Development dataset (dev)\n• Huge external dataset (ext)] --> A2[Fit FINAL model on full dev]
+    A2 --> A3[Compute EXTERNAL calibration slope:\nEvaluate FINAL model on ext]
+    
+    A2 --> A4[Internal validation step:\nBootstrap / CV / Split on dev\n(creates many refit/fold models)]
+    A4 --> A5[Compute INTERNAL calibration slope:\nFrom refits/fold predictions\n(tied to dev quirks)]
+  end
+
+  %% Correlation
+  A5 <--> A3
+
+  %% =========================
+  %% WHY NEGATIVE?
+  %% =========================
+  subgraph B[Why the correlation can go NEGATIVE]
+    B1["Some dev samples are 'lucky'\n(by chance: stronger apparent signal)"] --> B2[Internal slope looks BETTER\n(dev-based refits look good)]
+    B1 --> B3[Final model overfits more\n(predictions too extreme)]
+    B3 --> B4[External slope looks WORSE\n(calibration slope < 1)]
+    B2 --> B5[Across simulations:\ninternal slope ↑ while external slope ↓]
+    B4 --> B5
+  end
+
+  A5 --> B2
+  A3 --> B4
+
+  %% =========================
+  %% FIX
+  %% =========================
+  subgraph C[Fix: compare like-with-like]
+    C1[Internal validation creates refit/fold models] --> C2[Evaluate those SAME models on ext]
+    C2 --> C3[Average their external slopes\n→ procedure-level external slope]
+    C3 <--> C4[Now correlate:\nINTERNAL vs EXTERNAL\n→ correlation becomes positive]
+  end
+
+  A4 --> C1
+  A1 --> C2
+  A5 --> C4
+  C3 --> C4
+```
+
+
