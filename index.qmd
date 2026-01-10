@@ -75,9 +75,16 @@ apparent_stats <- results %>%
   ) %>%
   mutate(method = "Apparent")
 
-# Get external values 
+# Get external values (matched to each method's fitted models, then averaged per simulation)
 external_stats <- results %>%
-  filter(method == "Sample Split") %>%
+  group_by(simulation) %>%
+  summarise(
+    external_auc = mean(external_auc),
+    external_cal_slope = mean(external_cal_slope),
+    external_brier = mean(external_brier),
+    external_mape = mean(external_mape),
+    .groups = "drop"
+  ) %>%
   summarise(
     auc_mean = mean(external_auc),
     auc_sd = sd(external_auc),
@@ -164,6 +171,8 @@ For each simulation:
 -   Discrimination: AUC (C-statistic). The true model has a C-statistic of `r sprintf("%.3f", true_auc)`.
 -   Calibration: Calibration slope (1.0 = perfect; \<1.0 = overfitting)
 -   Overall accuracy: Brier score, Mean Absolute Prediction Error (MAPE)
+
+External calibration slopes are computed using the same fitted models used for internal validation (bootstrap refits, CV fold models, and sample-split training models). For calibration slope, CV and bootstrap internal estimates are averaged across their fold/refit models to align with the external calculation. The earlier mismatch that compared refit-based internal slopes to a single full-model external slope is not used in this analysis.
 
 # Results
 
@@ -280,6 +289,8 @@ knitr::include_graphics("density_mape.png")
 ```
 
 ## Correlation with External Validation
+
+These correlations use the matched external calibration slope from each method's fitted models. The previous mismatch compared refit-based internal slopes to the final-model external slope; here we align internal and external estimates by construction.
 
 ### Sample Split
 

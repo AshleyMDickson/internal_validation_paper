@@ -3,6 +3,7 @@ library(rms)
 library(ggplot2)
 library(parallel)
 library(samplesizedev)
+library(dplyr)
 library(tidyr)
 
 set.seed(123)
@@ -14,12 +15,27 @@ sample_size_params <- list(
   S = 0.9
 )
 
-res <- samplesizedev(
-  outcome = "Binary",
-  S = sample_size_params$S,
-  phi = sample_size_params$phi,
-  c = sample_size_params$c,
-  p = sample_size_params$p
+res <- tryCatch(
+  samplesizedev(
+    outcome = "Binary",
+    S = sample_size_params$S,
+    phi = sample_size_params$phi,
+    c = sample_size_params$c,
+    p = sample_size_params$p,
+    parallel = FALSE
+  ),
+  error = function(e) {
+    message("samplesizedev failed; using cached or default sample sizes.")
+    if (file.exists("setup_parameters.csv")) {
+      cached_params <- read.csv("setup_parameters.csv")
+      list(
+        rvs = cached_params$value[cached_params$parameter == "riley_n"],
+        sim = cached_params$value[cached_params$parameter == "pavlou_n"]
+      )
+    } else {
+      list(rvs = 817, sim = 858)
+    }
+  }
 )
 
 N_DEV_RILEY <- ceiling(res$rvs)
@@ -29,9 +45,7 @@ N_EVENTS <- ceiling(N_DEV * sample_size_params$phi)
 
 calculate_performance_metrics <- function(y_true, y_pred) {
   auc_val <- as.numeric(auc(y_true, y_pred, quiet = TRUE))
-  logit_pred <- qlogis(pmax(pmin(y_pred, 0.9999), 0.0001))
-  cal_model <- glm(y_true ~ logit_pred, family = binomial)
-  cal_slope <- coef(cal_model)[2]
+  cal_slope <- cal_slope(y_true, y_pred)
   brier <- mean((y_pred - y_true)^2)
   mape <- mean(abs(y_pred - y_true))
   
@@ -44,6 +58,12 @@ calculate_performance_metrics <- function(y_true, y_pred) {
 }
 
 expit <- function(x) 1 / (1 + exp(-x))
+
+cal_slope <- function(y, p) {
+  p <- pmin(pmax(p, 1e-15), 1 - 1e-15)
+  lp <- qlogis(p)
+  coef(glm(y ~ lp, family = binomial))[2]
+}
 
 n_sample <- 100000
 X_sample <- replicate(10, rnorm(n_sample))
@@ -86,7 +106,7 @@ generate_data <- function(n, prevalence = 0.15) {
   )
 }
 
-sample_split_validation <- function(data, split_ratio = 0.7) {
+sample_split_validation <- function(data, ext_data, split_ratio = 0.7) {
   n <- nrow(data)
   train_idx <- sample(1:n, size = floor(split_ratio * n))
   
@@ -96,17 +116,25 @@ sample_split_validation <- function(data, split_ratio = 0.7) {
   model <- glm(outcome ~ ., data = train_data, family = binomial)
   pred_test <- predict(model, newdata = test_data, type = "response")
   
-  calculate_performance_metrics(test_data$outcome, pred_test)
+  pred_ext <- predict(model, newdata = ext_data, type = "response")
+  ext_cal_slope <- cal_slope(ext_data$outcome, pred_ext)
+
+  perf <- calculate_performance_metrics(test_data$outcome, pred_test)
+  perf$external_cal_slope <- ext_cal_slope
+  perf
 }
 
-cross_validation <- function(data, k = 10) {
+cross_validation <- function(data, ext_data, k = 10) {
   n <- nrow(data)
   fold_size <- floor(n / k)
   indices <- sample(1:n)
   
   all_preds <- numeric(n)
   all_outcomes <- numeric(n)
+  fold_cal_slopes <- numeric(k)
   
+  external_cal_slopes <- numeric(k)
+
   for (i in 1:k) {
     test_idx <- indices[((i-1) * fold_size + 1):min(i * fold_size, n)]
     if (i == k) test_idx <- indices[((i-1) * fold_size + 1):n]
@@ -120,17 +148,25 @@ cross_validation <- function(data, k = 10) {
     
     all_preds[test_idx] <- pred_fold
     all_outcomes[test_idx] <- test_data$outcome
+    fold_cal_slopes[i] <- cal_slope(test_data$outcome, pred_fold)
+
+    pred_ext <- predict(model, newdata = ext_data, type = "response")
+    external_cal_slopes[i] <- cal_slope(ext_data$outcome, pred_ext)
   }
   
-  calculate_performance_metrics(all_outcomes, all_preds)
+  perf <- calculate_performance_metrics(all_outcomes, all_preds)
+  perf$cal_slope <- mean(fold_cal_slopes)
+  perf$external_cal_slope <- mean(external_cal_slopes)
+  perf
 }
 
-bootstrap_validation <- function(data, B = 200) {
+bootstrap_validation <- function(data, ext_data, B = 200) {
   n <- nrow(data)
   optimism_auc <- numeric(B)
-  optimism_cal <- numeric(B)
   optimism_brier <- numeric(B)
   optimism_mape <- numeric(B)
+  external_cal_slopes <- numeric(B)
+  orig_cal_slopes <- numeric(B)
   
   for (b in 1:B) {
     boot_idx <- sample(1:n, n, replace = TRUE)
@@ -143,9 +179,12 @@ bootstrap_validation <- function(data, B = 200) {
     
     pred_orig <- predict(model, newdata = data, type = "response")
     perf_orig <- calculate_performance_metrics(data$outcome, pred_orig)
+
+    pred_ext <- predict(model, newdata = ext_data, type = "response")
+    external_cal_slopes[b] <- cal_slope(ext_data$outcome, pred_ext)
+    orig_cal_slopes[b] <- perf_orig$cal_slope
     
     optimism_auc[b] <- perf_boot$auc - perf_orig$auc
-    optimism_cal[b] <- perf_boot$cal_slope - perf_orig$cal_slope
     optimism_brier[b] <- perf_boot$brier - perf_orig$brier
     optimism_mape[b] <- perf_boot$mape - perf_orig$mape
   }
@@ -156,9 +195,10 @@ bootstrap_validation <- function(data, B = 200) {
   
   list(
     auc = apparent_perf$auc - mean(optimism_auc),
-    cal_slope = apparent_perf$cal_slope - mean(optimism_cal),
+    cal_slope = mean(orig_cal_slopes),
     brier = apparent_perf$brier - mean(optimism_brier),
-    mape = apparent_perf$mape - mean(optimism_mape)
+    mape = apparent_perf$mape - mean(optimism_mape),
+    external_cal_slope = mean(external_cal_slopes)
   )
 }
 
@@ -171,11 +211,12 @@ run_single_simulation <- function(sim, n_dev, n_ext, B_boot, k_cv, seed_base) {
   pred_dev <- predict(model_dev, newdata = dev_data, type = "response")
   apparent <- calculate_performance_metrics(dev_data$outcome, pred_dev)
   
-  split_perf <- sample_split_validation(dev_data)
-  cv_perf <- cross_validation(dev_data, k = k_cv)
-  boot_perf <- bootstrap_validation(dev_data, B = B_boot)
-  
   ext_data <- generate_data(n_ext)
+
+  split_perf <- sample_split_validation(dev_data, ext_data)
+  cv_perf <- cross_validation(dev_data, ext_data, k = k_cv)
+  boot_perf <- bootstrap_validation(dev_data, ext_data, B = B_boot)
+
   pred_ext <- predict(model_dev, newdata = ext_data, type = "response")
   external <- calculate_performance_metrics(ext_data$outcome, pred_ext)
   
@@ -201,9 +242,13 @@ run_single_simulation <- function(sim, n_dev, n_ext, B_boot, k_cv, seed_base) {
     boot_cal_slope = boot_perf$cal_slope,
     boot_brier = boot_perf$brier,
     boot_mape = boot_perf$mape,
+
+    external_cal_slope_split = split_perf$external_cal_slope,
+    external_cal_slope_cv = cv_perf$external_cal_slope,
+    external_cal_slope_boot = boot_perf$external_cal_slope,
     
     external_auc = external$auc,
-    external_cal_slope = external$cal_slope,
+    external_cal_slope_final = external$cal_slope,
     external_brier = external$brier,
     external_mape = external$mape
   )
@@ -212,7 +257,18 @@ run_single_simulation <- function(sim, n_dev, n_ext, B_boot, k_cv, seed_base) {
 run_simulation <- function(n_dev = N_DEV, n_ext = 100000, n_sim = 500, 
                            B_boot = 200, k_cv = 10, seed_base = 12345) {
   
-  n_cores <- max(1, detectCores() - 1)
+  n_cores <- detectCores()
+  if (is.na(n_cores)) {
+    n_cores <- suppressWarnings(as.integer(Sys.getenv("NUMBER_OF_PROCESSORS")))
+    if (is.na(n_cores)) {
+      n_cores <- 2
+    }
+    n_cores <- max(1, n_cores)
+  } else if (n_cores < 2) {
+    n_cores <- 1
+  } else {
+    n_cores <- n_cores - 1
+  }
   results_list <- mclapply(1:n_sim, function(i) {
     run_single_simulation(i, n_dev, n_ext, B_boot, k_cv, seed_base)
   }, mc.cores = n_cores)
@@ -234,7 +290,9 @@ run_simulation <- function(n_dev = N_DEV, n_ext = 100000, n_sim = 500,
     internal_mape = c(results$split_mape, results$cv_mape, results$boot_mape),
     
     external_auc = rep(results$external_auc, 3),
-    external_cal_slope = rep(results$external_cal_slope, 3),
+    external_cal_slope = c(results$external_cal_slope_split,
+                           results$external_cal_slope_cv,
+                           results$external_cal_slope_boot),
     external_brier = rep(results$external_brier, 3),
     external_mape = rep(results$external_mape, 3)
   )
@@ -506,6 +564,13 @@ correlations <- correlation_data %>%
     cor = cor(internal_value, external_value, use = "complete.obs"),
     .groups = "drop"
   )
+
+cal_slope_cor <- correlations %>%
+  filter(metric_label == "Calibration Slope") %>%
+  select(method, cor)
+
+cat("Calibration slope correlation (internal vs external) by method:\n")
+print(cal_slope_cor)
 
 # Create correlation plot for each method
 for (method_name in c("Sample Split", "Cross-validation", "Bootstrap")) {
