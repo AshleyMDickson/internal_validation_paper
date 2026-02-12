@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ashley Dickson">
-<meta name="dcterms.date" content="2026-01-10">
+<meta name="dcterms.date" content="2026-02-11">
 
 <title>Comparing Internal Validation Methods for Clinical Risk Prediction – Internal Validation Methods Comparison</title>
 <style>
@@ -196,7 +196,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 10, 2026</p>
+      <p class="date">February 11, 2026</p>
     </div>
   </div>
   
@@ -243,7 +243,7 @@ window.Quarto = {
 <ol type="1">
 <li>Apparent validation - Optimistic test on development data (baseline)</li>
 <li>Sample Split - 70/30 split</li>
-<li>10-fold Cross-validation - Stratified folds with pooled predictions</li>
+<li>10-fold Cross-validation - Random folds; calibration slope is averaged across fold-wise slopes</li>
 <li>Bootstrap - Harrell’s optimism correction (200 resamples)</li>
 <li>External validation - Independent large dataset</li>
 </ol>
@@ -557,6 +557,18 @@ Figure&nbsp;11: Bootstrap
 </div>
 </div>
 </div>
+</section>
+<section id="interpretation-note-for-calibration-slope-correlations" class="level3" data-number="4.4.4">
+<h3 data-number="4.4.4" class="anchored" data-anchor-id="interpretation-note-for-calibration-slope-correlations"><span class="header-section-number">4.4.4</span> Interpretation Note for Calibration Slope Correlations</h3>
+<p>The calibration-slope correlations are:</p>
+<ul>
+<li>Sample split: 0.512</li>
+<li>Cross-validation: -0.448</li>
+<li>Bootstrap: -0.687</li>
+</ul>
+<p>This sign pattern appears to be a property of the calibration-slope estimators used here rather than a coding error. Calibration slope is estimated from a second logistic regression (<code>outcome ~ logit(prediction)</code>), so it is more sensitive to sample-specific outcome noise than metrics like AUC, Brier score, or MAPE.</p>
+<p>For CV and bootstrap, the internal slope is an average across many models fitted on development-derived data (fold complements or bootstrap resamples), while the matched external slope is averaged across those same models on an independent large dataset. Across simulations, development samples that induce stronger fitted coefficients tend to increase internal calibration slope but decrease external calibration slope, yielding an inverse between-simulation correlation. Sample splitting has much higher internal-slope noise (0.258 vs 0.062 for CV and 0.022 for bootstrap), which dilutes that inverse signal and can leave a net positive correlation.</p>
+<p>Separate diagnostic scripts in this repository (<code>debug_calibration_slope.R</code> and <code>test_hypothesis.R</code>) reproduce the negative CV/bootstrap correlation and support this interpretation.</p>
 </section>
 </section>
 </section>

@@ -124,6 +124,27 @@ bootstrap_cal_bias <- bias_rmse %>% filter(method == "Bootstrap") %>% pull(cal_s
 bootstrap_cal_rmse <- bias_rmse %>% filter(method == "Bootstrap") %>% pull(cal_slope_rmse)
 split_bootstrap_ratio <- split_cal_sd / bootstrap_cal_sd
 
+# Correlation diagnostics for calibration slope
+cal_slope_correlations <- results %>%
+  group_by(method) %>%
+  summarise(
+    cal_slope_cor = cor(internal_cal_slope, external_cal_slope),
+    internal_cal_sd = sd(internal_cal_slope),
+    .groups = "drop"
+  )
+
+split_cal_cor <- cal_slope_correlations %>%
+  filter(method == "Sample Split") %>%
+  pull(cal_slope_cor)
+
+cv_cal_cor <- cal_slope_correlations %>%
+  filter(method == "Cross-validation") %>%
+  pull(cal_slope_cor)
+
+boot_cal_cor <- cal_slope_correlations %>%
+  filter(method == "Bootstrap") %>%
+  pull(cal_slope_cor)
+
 # Calculate true C-statistic from the data generating process
 # This is the discriminative ability of the true model
 true_auc <- external_stats$auc_mean
@@ -162,7 +183,7 @@ For each simulation:
 
 1.  Apparent validation - Optimistic test on development data (baseline)
 2.  Sample Split - 70/30 split
-3.  10-fold Cross-validation - Stratified folds with pooled predictions
+3.  10-fold Cross-validation - Random folds; calibration slope is averaged across fold-wise slopes
 4.  Bootstrap - Harrell's optimism correction (200 resamples)
 5.  External validation - Independent large dataset
 
@@ -324,6 +345,20 @@ knitr::include_graphics("correlation_cross_validation.png")
 
 knitr::include_graphics("correlation_bootstrap.png")
 ```
+
+### Interpretation Note for Calibration Slope Correlations
+
+The calibration-slope correlations are:
+
+-   Sample split: `r sprintf("%.3f", split_cal_cor)`
+-   Cross-validation: `r sprintf("%.3f", cv_cal_cor)`
+-   Bootstrap: `r sprintf("%.3f", boot_cal_cor)`
+
+This sign pattern appears to be a property of the calibration-slope estimators used here rather than a coding error. Calibration slope is estimated from a second logistic regression (`outcome ~ logit(prediction)`), so it is more sensitive to sample-specific outcome noise than metrics like AUC, Brier score, or MAPE.
+
+For CV and bootstrap, the internal slope is an average across many models fitted on development-derived data (fold complements or bootstrap resamples), while the matched external slope is averaged across those same models on an independent large dataset. Across simulations, development samples that induce stronger fitted coefficients tend to increase internal calibration slope but decrease external calibration slope, yielding an inverse between-simulation correlation. Sample splitting has much higher internal-slope noise (`r sprintf("%.3f", split_cal_sd)` vs `r sprintf("%.3f", cv_cal_sd)` for CV and `r sprintf("%.3f", bootstrap_cal_sd)` for bootstrap), which dilutes that inverse signal and can leave a net positive correlation.
+
+Separate diagnostic scripts in this repository (`debug_calibration_slope.R` and `test_hypothesis.R`) reproduce the negative CV/bootstrap correlation and support this interpretation.
 
 # External Validation Sample Size Requirements
 
